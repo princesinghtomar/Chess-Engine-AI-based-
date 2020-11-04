@@ -8,7 +8,7 @@ import ChessEngine
 
 WIDTH = HEIGHT = 512  # 400 is another option
 DIMENSION = 8  # CHESSBOARD 8*8
-SQ_SIZE = HEIGHT/8  # DIMENSION
+SQ_SIZE = HEIGHT  // DIMENSION
 MAX_FPS = 15  # FOR ANIMATION LATER ON
 IMAGES = {}
 
@@ -16,11 +16,9 @@ IMAGES = {}
 
 
 def loadImages():
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wK',
-              'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
+    pieces = ['wp', 'wR', 'wN', 'wB', 'wK','wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for piece in pieces:
         # IMAGES[piece] =p.image.load("./"+piece+".png" )
-
         IMAGES[piece] = p.transform.scale(p.image.load("images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
 
 # this will be main driver it will handle
@@ -68,7 +66,11 @@ def drawBoard(screen):
 # Draw the pieces on the board using the current GameState.board
 
 def drawPieces(screen, board):
-    pass
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            piece=board[r][c]
+            if piece != "--": #not empty square
+                screen.blit(IMAGES[piece],p.Rect(c*SQ_SIZE,r*SQ_SIZE,SQ_SIZE,SQ_SIZE))
 
 if __name__ == "__main__":
     main()
