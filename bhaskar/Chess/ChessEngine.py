@@ -43,11 +43,11 @@ class GameState():
     # All moves withot considering checks
 
     def getAllPossibleMoves(self):
-        moves = [Move((6, 4), (4, 4), self.board)]
+        moves = []
         for r in range(len(self.board)):  # no of rows in
             for c in range(len(self.board[r])):  # no of col in row
                 turn = self.board[r][c][0]
-                if(turn == 'w' and self.whiteToMove) and (turn == 'b' and not self.whiteToMove):
+                if(turn == 'w' and self.whiteToMove) or (turn == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
                     if piece == 'p':
                         self.getPawnMoves(r, c, moves)
@@ -57,7 +57,27 @@ class GameState():
         return moves
 
     def getPawnMoves(self, r, c, moves):
-        pass
+        if self.whiteToMove:  # white pawn move
+            if self.board[r-1][c] == "--":  # 1 square pawn advance
+                moves.append(Move((r, c), (r-1, c), self.board))
+                if r == 6 and self.board[r-2][c] == "--":
+                    moves.append(Move((r, c), (r-2, c), self.board))
+            if c-1 >= 0:  #captures to the left 
+                if self.board[r-1][c-1][0]=='b': #enemy piece to capture
+                    moves.append(Move((r, c), (r-1, c-1), self.board))
+            
+            if c+1 < 7: #captures to the right
+                if self.board[r-1][c+1][0] =='b':
+                    moves.append(Move((r, c), (r-1, c+1), self.board))
+        else: #black pawn moves
+            
+            
+
+
+
+
+
+
 
     def getRookMoves(self, r, c, moves):
         pass
@@ -84,17 +104,14 @@ class Move():
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveID = self.startRow*1000 + self.startCol*100+self.endRow*10+self.endCol
-        print(self.moveID)
+        # print(self.moveID)
 
     # overriding the equal method
 
     def __eq__(self, other):
         if isinstance(other, Move):
-            return self.moveID==other.moveID
+            return self.moveID == other.moveID
         return False
-
-
-
 
     def getChessNotation(self):
         # add to make like real chess notation
