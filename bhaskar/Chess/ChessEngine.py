@@ -53,8 +53,6 @@ class GameState():
         # enpassant move
         if move.isEnpassantMove:
             self.board[move.startRow][move.endCol] = "--" # capturing the pawn
-            print(self.board[move.startRow][move.endCol])
-
 # undo function
     def undoMove(self):
         if len(self.moveLog) != 0:  # make sure there is move to undo
