@@ -164,8 +164,8 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
 def drawGameState(screen, gs, validMoves, sqSelected, initial ,final):
     drawBoard(screen)  # drawa sqares on board
     # add in piece highlighting or move suggestion (later)
-    highlightSquares(screen, gs, validMoves, sqSelected)
     lastMove(screen, gs,initial ,final)
+    highlightSquares(screen, gs, validMoves, sqSelected)
     drawPieces(screen, gs.board)  # draw pieces on top of those squares
 
 
