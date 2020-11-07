@@ -89,6 +89,8 @@ def main():
                 if e.key == p.K_r: #reset the board when 'r' is pressed
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
+                    final = ()
+                    initial = ()
                     sqSelected = ()
                     final=()
                     initial=()
