@@ -6,9 +6,9 @@ import ChessEngine
 
 # from Chess import ChessEngine  #this is not working
 
-WIDTH = HEIGHT = 512 *2 # 400 is another option
+WIDTH = HEIGHT = 512 * 2  # 400 is another option
 DIMENSION = 8  # CHESSBOARD 8*8
-SQ_SIZE = HEIGHT  // DIMENSION
+SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # FOR ANIMATION LATER ON
 IMAGES = {}
 
@@ -16,10 +16,12 @@ IMAGES = {}
 
 
 def loadImages():
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wK','wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
+    pieces = ['wp', 'wR', 'wN', 'wB', 'wK',
+              'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for piece in pieces:
         # IMAGES[piece] =p.image.load("./"+piece+".png" )
-        IMAGES[piece] = p.transform.scale(p.image.load("images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load(
+            "images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
 
 # this will be main driver it will handle
 # user input and update the graphics
@@ -32,38 +34,60 @@ def main():
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
     # print(gs.board)
+
+    validMoves = gs.getValidMoves()
+    moveMade = False  # flag variable when a move is made
+
     loadImages()
     running = True
-    sqSelected=() # keeps track of last call of user
-    playerClicks=[] #keeps track of players click
+    sqSelected = ()  # keeps track of last call of user
+    playerClicks = []  # keeps track of players click
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
-                running = False 
-            elif e.type==p.MOUSEBUTTONDOWN:
-                location=p.mouse.get_pos() #get mouse coordinates 
-                col=location[0]//SQ_SIZE
-                row=location[1]//SQ_SIZE
-                if sqSelected==(row,col): #reset if clicked on same block
-                    sqSelected=()
-                    playerClicks=[]
+                running = False
+
+            # mouse handler
+
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos()  # get mouse coordinates
+                col = location[0]//SQ_SIZE
+                row = location[1]//SQ_SIZE
+                if sqSelected == (row, col):  # reset if clicked on same block
+                    sqSelected = ()
+                    playerClicks = []
                 else:
-                    sqSelected=(row,col)
-                    playerClicks.append(sqSelected) #append for both first and second clicks
-                if len(playerClicks)==2: #after 2nd click
-                    move=ChessEngine.Move(playerClicks[0],playerClicks[1],gs.board)
+                    sqSelected = (row, col)
+                    # append for both first and second clicks
+                    playerClicks.append(sqSelected)
+                if len(playerClicks) == 2:  # after 2nd click
+                    move = ChessEngine.Move(
+                        playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    gs.makeMove(move)
-                    sqSelected=() #reset clicks
-                    playerClicks=[]
-                    
+                    for i in range(len(validMoves)):
+                        if move == validMoves[i]:
+                            gs.makeMove(validMoves[i])
+                            moveMade = True
+                            sqSelected = ()  # reset user clicks
+                            playerClicks = []
+                    if not moveMade:
+                        playerClicks = [sqSelected]
 
+            # key handler
 
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:  # undo a move by pressing z
+                    # need to implement this using undo button also %%
+                    gs.undoMove()
+                    moveMade = True
 
-        drawGameState(screen,gs)
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
+
+        drawGameState(screen, gs)
         clock.tick(MAX_FPS)
         p.display.flip()
-
 
 
 # Responsible for all the graphics within a current game state
@@ -82,7 +106,8 @@ def drawBoard(screen):
         for c in range(DIMENSION):
             color = colors[((r+c) % 2)]
             # color = colors[((1) % 2)]
-            p.draw.rect(screen, color, p.Rect(c*SQ_SIZE,r*SQ_SIZE,SQ_SIZE,SQ_SIZE))
+            p.draw.rect(screen, color, p.Rect(
+                c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
 
 # Draw the pieces on the board using the current GameState.board
@@ -90,9 +115,11 @@ def drawBoard(screen):
 def drawPieces(screen, board):
     for r in range(DIMENSION):
         for c in range(DIMENSION):
-            piece=board[r][c]
-            if piece != "--": #not empty square
-                screen.blit(IMAGES[piece],p.Rect(c*SQ_SIZE,r*SQ_SIZE,SQ_SIZE,SQ_SIZE))
+            piece = board[r][c]
+            if piece != "--":  # not empty square
+                screen.blit(IMAGES[piece], p.Rect(
+                    c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 if __name__ == "__main__":
     main()
