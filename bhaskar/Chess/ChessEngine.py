@@ -122,7 +122,14 @@ class GameState():
 
         else:  # not in check so all moves are fine
             moves = self.getAllPossibleMoves()
-        
+        if len(moves) == 0: #either chekmate or stalemate
+            if self.inCheck:
+                self.checkMate = True
+            else:
+                self.staleMate = True
+        else:
+            self.checkMate = False
+            self.staleMate = False
         return moves
 
     # def getValidMoves(self):
