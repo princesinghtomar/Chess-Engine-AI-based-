@@ -6,7 +6,7 @@ import ChessEngine
 
 # from Chess import ChessEngine  #this is not working
 
-WIDTH = HEIGHT = 512 * 2  # 400 is another option
+WIDTH = HEIGHT = 800  # 400 is another option
 DIMENSION = 8  # CHESSBOARD 8*8
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # FOR ANIMATION LATER ON
@@ -29,9 +29,9 @@ def loadImages():
 
 def main():
     p.init()
-    screen = p.display.set_mode((WIDTH, HEIGHT))
+    screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
     clock = p.time.Clock()
-    screen.fill(p.Color("white"))
+    screen.fill(p.Color(0x000F0F))
     gs = ChessEngine.GameState()
     # print(gs.board)
 
@@ -90,6 +90,8 @@ def main():
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
                     sqSelected = ()
+                    final=()
+                    initial=()
                     playerClicks = []
                     moveMade = False
                     animate = False
@@ -169,13 +171,20 @@ def drawGameState(screen, gs, validMoves, sqSelected, initial ,final):
 
 def drawBoard(screen):
     global colors
-    colors = [p.Color("white"), p.Color("grey")]
+    colors = [p.Color(202,164,114), p.Color(93,67,44)]
     for r in range(DIMENSION):
         for c in range(DIMENSION):
             color = colors[((r+c) % 2)]
             # color = colors[((1) % 2)]
             p.draw.rect(screen, color, p.Rect(
                 c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+    for r in range(1,9):
+        var=chr(96+r)
+        drawText2(screen,var,r*100-50,825)
+    for r in range(1,9):
+        var=chr(48-r+9)
+        drawText2(screen,var,825,r*100-50)
+    
 
 
 # Draw the pieces on the board using the current GameState.board
@@ -220,6 +229,16 @@ def drawText(screen, text):
     screen.blit(textObject, textLocation)
     textObject = font.render(text, 0, p.Color("Black"))
     screen.blit(textObject, textLocation.move(2,2))
+
+def drawText2(screen, text ,a,b):
+    font = p.font.SysFont("Helvitca", 50, True, False)
+    textObject =  font.render(text, 0, p.Color('Gray'))
+    textLocation = p.Rect(0, 0, WIDTH, HEIGHT).move(a - textObject.get_width()/2, b - textObject.get_height()/2)
+    screen.blit(textObject, textLocation)
+    textObject = font.render(text, 0, p.Color("white"))
+    screen.blit(textObject, textLocation.move(2,2))
+
+
 
 
 if __name__ == "__main__":
