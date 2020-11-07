@@ -89,3 +89,24 @@ def color_fav_move(board: chess.BoardT, fav_color: bool) -> chess.Move:
     if good_moves:
         return choice(good_moves)
     return choice(moves)
+
+def cccp_strategy(board: chess.BoardT) -> chess.Move:
+    moves = list(board.legal_moves)
+    good_moves = []
+    for move in moves:
+        board.push(move)
+        if board.is_checkmate():
+            good_moves.append(move)
+        elif board.is_check():
+            good_moves.append(move)
+        board.pop()
+        if good_moves:
+            return choice(good_moves)
+
+        if board.is_capture(move):
+            return move
+        else:
+            good_moves.append(move)
+    
+    return choice(good_moves)
+
