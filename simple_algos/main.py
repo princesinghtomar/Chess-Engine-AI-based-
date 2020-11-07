@@ -1,6 +1,6 @@
 import chess
 from chess import BLACK, WHITE
-from algos import color_fav_move, defensive_move, random_next_move, attacking_move
+from algos import color_fav_move, defensive_move, random_next_move, attacking_move, cccp_strategy
 from time import sleep
 
 board = chess.Board()
@@ -11,7 +11,7 @@ print(move_count, ":")
 print(board)
 while not board.is_game_over():
     if board.turn == chess.WHITE:
-        board.push(defensive_move(board))
+        board.push(cccp_strategy(board))
     else:
         board.push(attacking_move(board))
     move_count += 1
