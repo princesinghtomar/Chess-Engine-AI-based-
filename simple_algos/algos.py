@@ -4,16 +4,16 @@ import chess
 from chess import WHITE
 
 
-def tot_dis_from(board: chess.BoardT, target_sq: chess.Square) -> int:
-    tot_dis = 0
-    for sq in chess.SQUARES:
-        pc = board.piece_at(sq)
-        if pc and pc.color == board.turn:
-            tot_dis += chess.square_distance(target_sq, chess.square_rank(sq))
-    return tot_dis
-
-
 def move_towards_sq(board: chess.BoardT, dest_sq: chess.Square) -> chess.Move:
+    def tot_dis_from(board: chess.BoardT, target_sq: chess.Square) -> int:
+        tot_dis = 0
+        for sq in chess.SQUARES:
+            pc = board.piece_at(sq)
+            if pc and pc.color == board.turn:
+                tot_dis += chess.square_distance(target_sq,
+                                                 chess.square_rank(sq))
+        return tot_dis
+
     moves = list(board.legal_moves)
     min_dist = +inf
     chosen_moves = []
