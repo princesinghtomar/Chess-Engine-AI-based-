@@ -40,6 +40,8 @@ def main():
     animate = False #flag variable for when we should animate a move
     loadImages()
     running = True
+    initial = ()
+    final = ()
     sqSelected = ()  # keeps track of last call of user
     playerClicks = []  # keeps track of players click
     gameOver = False
@@ -98,8 +100,15 @@ def main():
             validMoves = gs.getValidMoves()
             moveMade = False
             animate = False
+            # if(gs.moveLog[-1]):
+            if(len(gs.moveLog)>=1):
+                final = (gs.moveLog[-1].endRow, gs.moveLog[-1].endCol)
+                initial = (gs.moveLog[-1].startRow, gs.moveLog[-1].startCol)
+            else:
+                initial = ()
+                final = ()
 
-        drawGameState(screen, gs, validMoves, sqSelected)
+        drawGameState(screen, gs, validMoves, sqSelected, initial ,final)
         if gs.checkMate:
             gameOver = True
             if gs.whiteToMove:
@@ -113,13 +122,27 @@ def main():
         clock.tick(MAX_FPS)
         p.display.flip()
 
+#highlight last move made by opponent
+def lastMove(screen, gs, initial, final):
+    if initial != () and final != ():
+        ri, ci = initial
+        rf, cf = final
+        si = p.Surface((SQ_SIZE, SQ_SIZE))
+        si.set_alpha(100)
+        si.fill(p.Color('green'))
+        sf = p.Surface((SQ_SIZE, SQ_SIZE))
+        sf.set_alpha(100)
+        sf.fill(p.Color('purple'))
+        # print(initial, final)
+        screen.blit(si, (ci*SQ_SIZE, ri*SQ_SIZE))
+        screen.blit(sf, (cf*SQ_SIZE, rf*SQ_SIZE))
 
 # Highlight square selected and moves for piece selected
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'): # square selected is a piece that can be moved
-            # highlight slected square
+            # highlight selected square
             s = p.Surface((SQ_SIZE,SQ_SIZE))
             s.set_alpha(100) # transparency value (0,255)
             s.fill(p.Color('blue'))
@@ -134,10 +157,11 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
 
 # Responsible for all the graphics within a current game state
 
-def drawGameState(screen, gs, validMoves, sqSelected):
+def drawGameState(screen, gs, validMoves, sqSelected, initial ,final):
     drawBoard(screen)  # drawa sqares on board
     # add in piece highlighting or move suggestion (later)
     highlightSquares(screen, gs, validMoves, sqSelected)
+    lastMove(screen, gs,initial ,final)
     drawPieces(screen, gs.board)  # draw pieces on top of those squares
 
 
