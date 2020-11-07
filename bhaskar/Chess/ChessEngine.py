@@ -21,9 +21,13 @@ class GameState():
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
         self.inCheck = False
+        self.checkMate = False
+        self.staleMate = False
         self.pins = []
         self.checks = []
         self.enpassantPossible = () # coordinates for the square where en passant capture is possible
+        # self.currentCastlingRight = CastlingRights(True, True, True, True)
+        # self.castleRightsLog = [CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)]
 
 
 # takes a move as  a parameter and executes it
