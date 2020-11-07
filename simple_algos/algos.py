@@ -1,17 +1,19 @@
 from math import inf
 from random import choice
 import chess
-
-def tot_dis_from(board: chess.BoardT, target_sq: chess.Square) -> int:
-    tot_dis = 0
-    for sq in chess.SQUARES:
-        pc = board.piece_at(sq)
-        if pc and pc.color == board.turn:
-            tot_dis += chess.square_distance(target_sq, chess.square_rank(sq))
-    return tot_dis
+from chess import WHITE
 
 
 def move_towards_sq(board: chess.BoardT, dest_sq: chess.Square) -> chess.Move:
+    def tot_dis_from(board: chess.BoardT, target_sq: chess.Square) -> int:
+        tot_dis = 0
+        for sq in chess.SQUARES:
+            pc = board.piece_at(sq)
+            if pc and pc.color == board.turn:
+                tot_dis += chess.square_distance(target_sq,
+                                                 chess.square_rank(sq))
+        return tot_dis
+
     moves = list(board.legal_moves)
     min_dist = +inf
     chosen_moves = []
@@ -90,23 +92,44 @@ def color_fav_move(board: chess.BoardT, fav_color: bool) -> chess.Move:
         return choice(good_moves)
     return choice(moves)
 
+
 def cccp_strategy(board: chess.BoardT) -> chess.Move:
     moves = list(board.legal_moves)
-    good_moves = []
+    ckmate_moves = []
+    capture_moves = []
+    check_moves = []
+    max_pushed_move = None
+    max_push_dist = -inf
+
+    def dist_from_homeborder(col: chess.Color) -> int:
+        home_row = 0 if col == WHITE else 7
+        sum = 0
+        for sq in chess.SQUARES:
+            pc = board.piece_at(sq)
+            if pc and pc.color == col:
+                sum += abs(chess.square_rank(sq) - home_row)
+        return sum
+
     for move in moves:
         board.push(move)
         if board.is_checkmate():
-            good_moves.append(move)
+            ckmate_moves.append(move)
         elif board.is_check():
-            good_moves.append(move)
+            check_moves.append(move)
         board.pop()
-        if good_moves:
-            return choice(good_moves)
-
         if board.is_capture(move):
-            return move
-        else:
-            good_moves.append(move)
-    
-    return choice(good_moves)
+            capture_moves.append(move)
 
+        if [] == ckmate_moves == check_moves == capture_moves:
+            board.push(move)
+            push_dist = dist_from_homeborder(not board.turn)
+            if push_dist > max_push_dist:
+                max_push_dist = push_dist
+                max_pushed_move = move
+            board.pop()
+
+    for q in [ckmate_moves, check_moves, capture_moves]:
+        if q:
+            return choice(q)
+
+    return max_pushed_move

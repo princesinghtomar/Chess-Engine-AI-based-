@@ -1,3 +1,4 @@
+from random import seed
 import chess
 from chess import BLACK, WHITE
 from algos import color_fav_move, defensive_move, random_next_move, attacking_move, cccp_strategy
@@ -5,7 +6,7 @@ from time import sleep
 
 board = chess.Board()
 
-
+# seed(0)
 move_count = 0
 print(move_count, ":")
 print(board)
