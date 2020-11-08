@@ -23,14 +23,80 @@ def loadImages():
         IMAGES[piece] = p.transform.scale(p.image.load(
             "images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
 
+#for diplaying text on the screen
+
+def show_text(x, y, font_size, color, screen,msg_string):
+    font = p.font.Font('freesansbold.ttf', font_size)
+    startq = font.render(msg_string, True, color)
+    screen.blit(startq, (y, x))
+
 # this will be main driver it will handle
 # user input and update the graphics
 
-
 def main():
     p.init()
-    screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
     clock = p.time.Clock()
+    # some colors
+    green = (0, 255, 0) 
+    blue = (0, 0, 128) 
+    start_screen = True # for startscreen
+    running = True # for game screen
+    # game intro and options menu
+    selected_pos = ()
+    is_fischer = False
+    #display_surface = pygame.display.set_mode((WIDTH, HEIGHT ))
+    
+    while start_screen:
+
+        screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
+        screen.fill(p.Color(0x000F0F))
+        
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                start_screen = False
+                running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+                loc_mouse = p.mouse.get_pos()
+                col = loc_mouse[0]
+                row = loc_mouse[1]
+                selected_pos = (row,col)
+
+            if e.type == p.KEYUP:
+
+                if e.key == ord('q') or e.key == ord('Q'):
+                    start_screen = False
+                    running = False
+
+                if e.key == ord('n') or e.key == ord('N'):
+                    start_screen = False
+                    running = True
+                    is_fischer = False
+                
+                if e.key == ord('f') or e.key == ord('F'):
+                    start_screen = False
+                    running = True
+                    is_fischer = True
+
+
+        show_text(0,300,32,green,screen,'Chess Game')
+        show_text(30,10,24,blue,screen,'Team : Well Forked')
+        show_text(60,10,24,blue,screen,'1) Member')
+        show_text(90,10,24,blue,screen,'2) Member')
+        show_text(120,10,24,blue,screen,'3) Member')
+        show_text(150,10,24,blue,screen,'4) Member')
+        show_text(180,10,24,blue,screen,'5) Member')
+        show_text(210,10,24,blue,screen,'6) Member')
+        
+        show_text(270,10,26,green,screen,'for Normal Chess Press N')
+        show_text(310,10,26,green,screen,'for Fischer Chess Press F')
+        
+        show_text(820,10,20,blue,screen,'Press q to exit')
+
+        clock.tick(MAX_FPS)
+        p.display.flip()
+
+    
+    screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
     screen.fill(p.Color(0x000F0F))
     gs = ChessEngine.GameState()
     # print(gs.board)
@@ -39,7 +105,6 @@ def main():
     moveMade = False  # flag variable when a move is made
     animate = False #flag variable for when we should animate a move
     loadImages()
-    running = True
     initial = ()
     final = ()
     sqSelected = ()  # keeps track of last call of user
