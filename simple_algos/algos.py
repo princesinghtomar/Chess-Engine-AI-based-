@@ -172,11 +172,11 @@ def alphabetic(board: chess.BoardT) -> chess.Move:
 # and return the move based in strategy
 # thus a generalised strategy function can be called as stragegy(board)
 strategies_list = {
-    "defensive": defensive_move,
-    "attacking": attacking_move,
-    "random": random_next_move,
     "alphabetic": alphabetic,
-    "cccp": cccp_strategy,
     "black_sq": black_sq_move,
     "white_sq": white_sq_move,
+    "random": random_next_move,
+    "defensive": defensive_move,
+    "attacking": attacking_move,
+    "cccp": cccp_strategy,
 }
