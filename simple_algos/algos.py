@@ -1,7 +1,7 @@
 from math import inf
 from random import choice
 import chess
-from chess import WHITE
+from chess import BLACK, WHITE
 
 
 def move_towards_sq(board: chess.BoardT, dest_sq: chess.Square) -> chess.Move:
@@ -93,6 +93,13 @@ def color_fav_move(board: chess.BoardT, fav_color: bool) -> chess.Move:
     return choice(moves)
 
 
+def black_sq_move(board: chess.BoardT) -> chess.Move:
+    return color_fav_move(board, BLACK)
+
+
+def white_sq_move(board: chess.BoardT) -> chess.Move:
+    return color_fav_move(board, WHITE)
+
 def cccp_strategy(board: chess.BoardT) -> chess.Move:
     moves = list(board.legal_moves)
     ckmate_moves = []
@@ -159,3 +166,17 @@ def alphabetic(board: chess.BoardT) -> chess.Move:
         return good_moves_check[0]
     
     return moves[0]
+
+
+# all these are functions which take parameter 'board' only
+# and return the move based in strategy
+# thus a generalised strategy function can be called as stragegy(board)
+strategies_list = {
+    "defensive": defensive_move,
+    "attacking": attacking_move,
+    "random": random_next_move,
+    "alphabetic": alphabetic,
+    "cccp": cccp_strategy,
+    "black_sq": black_sq_move,
+    "white_sq": white_sq_move,
+}
