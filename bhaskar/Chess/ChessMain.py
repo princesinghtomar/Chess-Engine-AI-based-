@@ -303,7 +303,7 @@ def is_fill_function():
     print("Enter White Pieces")
     print("Enter N,B,R,K,Q")
     while i < 8 :
-        input_str = input("Enter at"+ positon_arr[i] +"7 : ")
+        input_str = input("Enter at "+ positon_arr[i] +"7 : ")
         s = str_color + input_str
         old_board[7][i] = s
         index = -1
@@ -363,12 +363,12 @@ def main():
                 gs.board = prev_board
                 is_random = False
                 #print("2")
-            if is_fischer:
+            elif is_fischer:
                 prev_board = is_fischer_function()
                 gs.board = prev_board
                 is_fischer = False
                 #print("1")
-            if not is_fischer or not is_random:
+            elif not is_fischer or not is_random:
                 gs.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
