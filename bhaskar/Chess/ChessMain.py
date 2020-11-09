@@ -16,8 +16,11 @@ IMAGES = {}
 green = (0, 255, 0) 
 blue = (0, 0, 128) 
 
-#background = pygame.image.load(backgroundimage1)
-background2 = p.image.load("images/background2.jpeg")
+p_image = p.image.load("images/b.png")
+p_image = p.transform.scale(p_image, (850, 850))
+c_image = p.image.load("images/cross.png")
+c_image = p.transform.scale(c_image, (70, 70))
+background2 = p.image.load("images/background2.jpg")
 
 # load image will initialize a global dictionary of images only once in a code
 
@@ -37,6 +40,11 @@ def show_text(x, y, font_size, color, screen,msg_string):
     startq = font.render(msg_string, True, color)
     screen.blit(startq, (y, x))
 
+def show_text1(x, y, font_size, color, screen,msg_string):
+    font = p.font.Font('font/Ubuntu-Medium.ttf', font_size)
+    startq = font.render(msg_string, True, color)
+    screen.blit(startq, (y, x))
+
 def acknowledge_screen(clock):
     flag_start = True
     time_elapsed = 0
@@ -44,7 +52,8 @@ def acknowledge_screen(clock):
     while flag_start:
         screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
         screen.fill(p.Color(0x000F0F))
-        #screen.blit(background2, (0, 0))
+        screen.blit(background2, (0, -16))
+        
         for e in p.event.get():
             if e.type == p.QUIT:
                 flag_start = False
@@ -57,10 +66,10 @@ def acknowledge_screen(clock):
         time_elapsed = time_elapsed + dt
 
         # write what you want to write in aknowleddge screen
-        show_text(0,300,32,green,screen,'Chess Game')
-        show_text(200,300,24,blue,screen,'Team : Well Forked')
+        show_text1(0,246,64,0x5B84B1FF,screen,'Chess Game')
+        show_text(200,300,24,0x4b878bff,screen,'Team : Well Forked')
 
-        show_text(820,10,20,blue,screen,'Press q to move to main menu')
+        show_text(820,10,20,0xFC766AFF,screen,'Press q to move to main menu')
         
         if time_elapsed > 1000 :
             flag_start = False
@@ -74,6 +83,8 @@ def show_startscreen(clock):
 
         screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
         screen.fill(p.Color(0x000F0F))
+        screen.blit(p_image,(0,0))
+        screen.blit(c_image,(780,0))
         
         for e in p.event.get():
             if e.type == p.QUIT:
@@ -81,54 +92,66 @@ def show_startscreen(clock):
                 #running = False
                 return [False,False]
 
-            elif e.type == p.MOUSEBUTTONDOWN:
+            if e.type == p.MOUSEMOTION:
+                x, y = e.pos
+                if x >=780 and y <=70:
+                    #print("Hovering over the item!")
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                elif(x in range(240,600)) and (y in range(550,580)) :
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                elif(x in range(240,600)) and (y in range(600,630)) :
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                elif(x in range(235,605)) and (y in range(650,680)) :
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                else: 
+                    p.mouse.set_cursor(*p.cursors.arrow)
+
+            if e.type == p.MOUSEBUTTONDOWN:
                 loc_mouse = p.mouse.get_pos()
-                col = loc_mouse[0]//SQ_SIZE
-                row = loc_mouse[1]//SQ_SIZE
-                
+                #screen.blit(cursor, cursor_rect)
+                col = loc_mouse[0]
+                row = loc_mouse[1]
+                if col>=780 and row <= 70:
+                    return [False,False,False]
+                elif (col in range(240,600)) and (row in range(550,580)) :
+                    return [True,False,False]
+                elif (col in range(240,600)) and (row in range(600,630)) :
+                    return [True,True,False]
+                elif (col in range(235,605)) and (row in range(650,680)) :
+                    return [True,False,True]
 
             if e.type == p.KEYUP:
 
                 if e.key == ord('q') or e.key == ord('Q'):
-                    #start_screen = False
-                    #running = False
                     return [False,False,False]
 
                 if e.key == ord('n') or e.key == ord('N'):
-                    #start_screen = False
-                    #running = True
-                    #is_fischer = False
                     return [True,False,False]
                 
                 if e.key == ord('f') or e.key == ord('F'):
-                    #start_screen = False
-                    #running = True
-                    #is_fischer = True
                     return [True,True,False]
                 
                 if e.key == ord('g') or e.key == ord('G'):
-                    #start_screen = False
-                    #running = True
-                    #is_fischer = True
                     return [True,False,True]
 
-        show_text(0,300,32,green,screen,'Chess Game')
-        show_text(30,10,24,blue,screen,'Team : Well Forked')
+        show_text1(0,246,64,0x5B84B1FF,screen,'Chess Game')
+        """ show_text(30,10,24,blue,screen,'Team : Well Forked')
         show_text(60,10,24,blue,screen,'1) Member')
         show_text(90,10,24,blue,screen,'2) Member')
         show_text(120,10,24,blue,screen,'3) Member')
         show_text(150,10,24,blue,screen,'4) Member')
         show_text(180,10,24,blue,screen,'5) Member')
-        show_text(210,10,24,blue,screen,'6) Member')
-        show_text(270,10,26,green,screen,'for Normal Chess Press N')
-        show_text(310,10,26,green,screen,'for Fischer Chess Press F')
-        show_text(350,10,26,green,screen,'for Random Chess Press G')
-        show_text(820,10,20,blue,screen,'Press q to exit')
+        show_text(210,10,24,blue,screen,'6) Member') """
+        show_text(550,240,28,green,screen,'for Normal Chess Press n')
+        show_text(600,240,28,green,screen,'for Fischer Chess Press f')
+        show_text(650,235,28,green,screen,'for Random Chess Press g')
+        show_text(820,10,20,0xFC766AFF,screen,'Press q to exit')
 
         clock.tick(MAX_FPS)
         p.display.flip()
     
-    return [True,False]
+    #screen.fill(p.Color(0x000F0F))
+    return [True,False,False]
 
 def show_endscreen(clock,msg):
     flag_start = True
@@ -137,11 +160,32 @@ def show_endscreen(clock,msg):
     while flag_start:
         screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
         screen.fill(p.Color(0x000F0F))
-        #screen.blit(background2, (0, 0))
+        screen.blit(p_image,(0,0))
+        screen.blit(c_image,(780,0))
         for e in p.event.get():
             if e.type == p.QUIT:
                 flag_start = False
                 return False
+            
+            if e.type == p.MOUSEMOTION:
+                x, y = e.pos
+                if x >=780 and y <=70:
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                elif (x in range(235,605)) and (y in range(650,680)) :
+                    p.mouse.set_cursor(*p.cursors.broken_x)
+                else: 
+                    p.mouse.set_cursor(*p.cursors.arrow)
+
+            if e.type == p.MOUSEBUTTONDOWN:
+                loc_mouse = p.mouse.get_pos()
+                col = loc_mouse[0]
+                row = loc_mouse[1]
+                if col>=780 and row <= 70:
+                    flag_start = False
+                    return False
+                elif (col in range(235,605)) and (row in range(650,680)) :
+                    flag_start = False
+                    return True
 
             if e.type == p.KEYUP:
                 if e.key == ord('q') or e.key == ord('Q'):
@@ -155,13 +199,11 @@ def show_endscreen(clock,msg):
 
         dt = clock.tick()
         time_elapsed = time_elapsed + dt
-
-        # write what you want to write in aknowleddge screen
-        show_text(0,300,32,green,screen,'Chess Game')
-        show_text(40,300,24,blue,screen,'Team : Well Forked')
-        show_text(200,300,24,p.Color('red'),screen,msg)
-        show_text(500,10,20,blue,screen,'Press ENTER to return to main menu')
-        show_text(820,10,20,blue,screen,'Press q to exit')
+        show_text1(0,246,64,0x5B84B1FF,screen,'Chess Game')
+        #msg = "nikal be"
+        show_text(100,240,24,0x4b878bff,screen,msg)
+        show_text(650,235,28,green,screen,'Press Enter for Main menu')
+        show_text(820,10,20,0xFC766AFF,screen,'Press q to exit')
         
         if time_elapsed > 6000 :
             flag_start = False
@@ -220,7 +262,44 @@ def is_fischer_function():
     
     return old_board
         
+""" 
+def is_fill_function():
+    old_board = [
+            ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+            ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+            ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+    black_pawns = ["bR", "bN", "bB", "bQ", "bK"]
+    black_pawns_val = ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"] 
+    black_pawns_num = [2,2,2,1,1]
+    str_color = "b"
+    i = 0
+    print("Enter Black Pawns")
+    print("Enter N,B,R,K,Q")
+    while i < 8 :
+        input_str = input("Enter :")
+        s = str_color + input_str
+        index = -1
+        for j in black_pawns:
+            if s == j:
+                index = black_pawns.index(j)
+        if index == -1:
+            print("Enter correct values")
 
+        if black_pawns_num[index] != 0:
+            black_pawns_num[index] -=1
+            black_pawns_val[index] = black_pawns[index]
+            i+=1          
+        else:
+            print("Enter correct values")
+    for i in range(8):
+        old_board[0][i] = black_pawns_val[i]
+    return old_board
+ """
 # this will be main driver it will handle
 # user input and update the graphics
 
@@ -251,6 +330,8 @@ def main():
     while running:
         if start_screen:
             return_val = show_startscreen(clock)
+            screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
+            screen.fill(p.Color(0x000F0F))
             running = return_val[0]
             is_fischer = return_val[1]
             is_random = return_val[2]
