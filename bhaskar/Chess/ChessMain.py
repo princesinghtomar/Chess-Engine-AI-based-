@@ -144,7 +144,7 @@ def show_startscreen(clock):
         show_text(210,10,24,blue,screen,'6) Member') """
         show_text(550,240,28,green,screen,'for Normal Chess Press n')
         show_text(600,240,28,green,screen,'for Fischer Chess Press f')
-        show_text(650,235,28,green,screen,'for Random Chess Press g')
+        show_text(650,218,28,green,screen,'to make Chess board Press g')
         show_text(820,10,20,0xFC766AFF,screen,'Press q to exit')
 
         clock.tick(MAX_FPS)
@@ -262,7 +262,7 @@ def is_fischer_function():
     
     return old_board
         
-""" 
+
 def is_fill_function():
     old_board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -274,15 +274,15 @@ def is_fill_function():
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
     black_pawns = ["bR", "bN", "bB", "bQ", "bK"]
-    black_pawns_val = ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"] 
     black_pawns_num = [2,2,2,1,1]
-    str_color = "b"
+    str_color = 'b'
     i = 0
     print("Enter Black Pawns")
     print("Enter N,B,R,K,Q")
     while i < 8 :
         input_str = input("Enter :")
         s = str_color + input_str
+        old_board[0][i] = s
         index = -1
         for j in black_pawns:
             if s == j:
@@ -292,14 +292,34 @@ def is_fill_function():
 
         if black_pawns_num[index] != 0:
             black_pawns_num[index] -=1
-            black_pawns_val[index] = black_pawns[index]
             i+=1          
         else:
             print("Enter correct values")
-    for i in range(8):
-        old_board[0][i] = black_pawns_val[i]
+    white_pawns = ["wR", "wN", "wB", "wQ", "wK"]
+    white_pawns_num = [2,2,2,1,1]
+    str_color = 'w'
+    i = 0
+    print("Enter White Pawns")
+    print("Enter N,B,R,K,Q")
+    while i < 8 :
+        input_str = input("Enter :")
+        s = str_color + input_str
+        old_board[7][i] = s
+        index = -1
+        for j in white_pawns:
+            if s == j:
+                index = white_pawns.index(j)
+        if index == -1:
+            print("Enter correct values")
+
+        if white_pawns_num[index] != 0:
+            white_pawns_num[index] -=1
+            i+=1          
+        else:
+            print("Enter correct values")
+    
     return old_board
- """
+ 
 # this will be main driver it will handle
 # user input and update the graphics
 
@@ -336,7 +356,7 @@ def main():
             is_fischer = return_val[1]
             is_random = return_val[2]
             if is_random:
-                gs.board = is_random_function()
+                gs.board = is_fill_function()
                 is_random = False
             if is_fischer:
                 gs.board = is_fischer_function()
