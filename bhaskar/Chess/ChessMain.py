@@ -275,12 +275,13 @@ def is_fill_function():
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
     black_pawns = ["bR", "bN", "bB", "bQ", "bK"]
     black_pawns_num = [2,2,2,1,1]
+    positon_arr = ['a','b','c','d','e','f','g','h']
     str_color = 'b'
     i = 0
-    print("Enter Black Pawns")
+    print("Enter Black Pieces")
     print("Enter N,B,R,K,Q")
     while i < 8 :
-        input_str = input("Enter :")
+        input_str = input("Enter at "+ positon_arr[i] +"1 : ")
         s = str_color + input_str
         old_board[0][i] = s
         index = -1
@@ -299,10 +300,10 @@ def is_fill_function():
     white_pawns_num = [2,2,2,1,1]
     str_color = 'w'
     i = 0
-    print("Enter White Pawns")
+    print("Enter White Pieces")
     print("Enter N,B,R,K,Q")
     while i < 8 :
-        input_str = input("Enter :")
+        input_str = input("Enter at"+ positon_arr[i] +"7 : ")
         s = str_color + input_str
         old_board[7][i] = s
         index = -1
@@ -335,6 +336,7 @@ def main():
     screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
     screen.fill(p.Color(0x000F0F))
     gs = ChessEngine.GameState()
+    prev_board = gs.board
     # print(gs.board)
 
     validMoves = gs.getValidMoves()
@@ -346,6 +348,7 @@ def main():
     sqSelected = ()  # keeps track of last call of user
     playerClicks = []  # keeps track of players click
     gameOver = False
+    #if_fill_or_fischer = False
     msg = ''
     while running:
         if start_screen:
@@ -356,14 +359,30 @@ def main():
             is_fischer = return_val[1]
             is_random = return_val[2]
             if is_random:
-                gs.board = is_fill_function()
+                prev_board = is_fill_function()
+                gs.board = prev_board
                 is_random = False
+                #print("2")
             if is_fischer:
-                gs.board = is_fischer_function()
+                prev_board = is_fischer_function()
+                gs.board = prev_board
                 is_fischer = False
-            #print(gs.board)
+                #print("1")
+            if not is_fischer or not is_random:
+                gs.board = [
+            ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+            ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+            ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+            gameOver = False
             start_screen = False
             continue
+        
+        #print(prev_board)
         
         for e in p.event.get():
             if e.type == p.QUIT:
@@ -416,6 +435,11 @@ def main():
                     playerClicks = []
                     moveMade = False
                     animate = False
+                    gs.staleMate = False
+                    gs.checkMate = False
+                    gs.checks = False
+                    gs.board = prev_board
+                    
                 if e.key == p.K_m:
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
@@ -427,6 +451,9 @@ def main():
                     playerClicks = []
                     moveMade = False
                     animate = False
+                    gs.staleMate = False
+                    gs.checkMate = False
+                    gs.checks = False
                     start_screen = True
                     continue
 
@@ -466,6 +493,7 @@ def main():
                 running = False
             gs = ChessEngine.GameState()
             validMoves = gs.getValidMoves()
+            gameOver = False
             final = ()
             initial = ()
             sqSelected = ()
@@ -475,6 +503,9 @@ def main():
             moveMade = False
             animate = False
             end_screen = False
+            gs.staleMate = False
+            gs.checkMate = False
+            gs.checks = False
             start_screen = True
 
         clock.tick(MAX_FPS)
