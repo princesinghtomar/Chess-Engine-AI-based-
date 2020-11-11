@@ -13,7 +13,7 @@ def evaluate(board: chess.BoardT, for_white: bool) -> int:
     return random.randint(0, 100)
 
 
-def minimax(board: chess.BoardT, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, chess.Move]:
+def minimax(board: chess.BoardT, alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, chess.Move]:
     """
         returns an integer score and move which is the best current player can get
     """
@@ -27,18 +27,37 @@ def minimax(board: chess.BoardT, maximizer: bool, curDepth: int, max_depth: int)
     moves = list(board.legal_moves)
     assert moves != []
     best_move = None
-    best_score = -inf if maximizer else +inf
+    if maximizer:
+        best_score = -inf
 
-    def is_better_score(curr, currbest):
-        return curr > currbest if maximizer else curr < currbest
+        def is_better_score(curr, currbest):
+            return curr > currbest
+
+        def update_AB(score):
+            nonlocal alpha
+            alpha = max(alpha, score)
+
+    else:
+        best_score = +inf
+
+        def is_better_score(curr, currbest):
+            return curr < currbest
+
+        def update_AB(score):
+            nonlocal beta
+            beta = min(beta, score)
+
     for move in moves:
         board.push(move)
-        curr_score, _ = minimax(board, not maximizer,
-                                curDepth+1, max_depth=max_depth)
+        curr_score, _ = minimax(
+            board, alpha, beta, not maximizer, curDepth+1, max_depth)
+        board.pop()
         if is_better_score(curr_score, best_score):
             best_score = curr_score
             best_move = move
-        board.pop()
+            update_AB(best_score)
+            if alpha >= beta:
+                break
 
     return best_score, best_move
 
@@ -47,8 +66,8 @@ def next_move_restricted(board: chess.BoardT, max_depth: int) -> Tuple[float, ch
     """
         returns best move calculated till depth given
     """
-    score, move = minimax(board, maximizer=True,
-                          curDepth=0, max_depth=max_depth)
+    score, move = minimax(board, alpha=-inf, beta=+inf,
+                          maximizer=True, curDepth=0, max_depth=max_depth)
     if not move:
         return -inf, None
     return score, move
