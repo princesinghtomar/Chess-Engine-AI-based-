@@ -4,6 +4,7 @@
 import pygame as p
 import ChessEngine
 import random
+import io
 
 # from Chess import ChessEngine  #this is not working
 
@@ -348,6 +349,28 @@ def is_fill_function():
 # this will be main driver it will handle
 # user input and update the graphics
 
+def board_to_fen(board):
+    # Use StringIO to build string more efficiently than concatenating
+    with io.StringIO() as s:
+        for row in board:
+            empty = 0
+            for cell in row:
+                c = cell[0]
+                if c in ('w', 'b'):
+                    if empty > 0:
+                        s.write(str(empty))
+                        empty = 0
+                    s.write(cell[1].upper() if c == 'w' else cell[1].lower())
+                else:
+                    empty += 1
+            if empty > 0:
+                s.write(str(empty))
+            s.write('/')
+        # Move one position back to overwrite last '/'
+        s.seek(s.tell() - 1)
+        # If you do not have the additional information choose what to put
+        s.write(' w KQkq - 0 1')
+        return s.getvalue()
 
 def main():
     p.init()
@@ -362,6 +385,7 @@ def main():
     screen.fill(p.Color(0x000F0F))
     gs = ChessEngine.GameState()
     prev_board = gs.board
+    
     # print(gs.board)
 
     validMoves = gs.getValidMoves()
@@ -379,6 +403,8 @@ def main():
     #if_fill_or_fischer = False
     msg = ''
     while running:
+        print_board = board_to_fen(gs.board)
+        print(print_board)
         if start_screen:
 
             return_val = show_startscreen(clock)
