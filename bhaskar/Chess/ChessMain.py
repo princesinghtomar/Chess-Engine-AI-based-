@@ -346,9 +346,6 @@ def is_fill_function():
 
     return old_board
 
-# this will be main driver it will handle
-# user input and update the graphics
-
 def board_to_fen(board):
     # Use StringIO to build string more efficiently than concatenating
     with io.StringIO() as s:
@@ -371,6 +368,9 @@ def board_to_fen(board):
         # If you do not have the additional information choose what to put
         s.write(' w KQkq - 0 1')
         return s.getvalue()
+
+# this will be main driver it will handle
+# user input and update the graphics
 
 def main():
     p.init()
@@ -403,8 +403,8 @@ def main():
     #if_fill_or_fischer = False
     msg = ''
     while running:
-        print_board = board_to_fen(gs.board)
-        print(print_board)
+        #print_board = board_to_fen(gs.board)
+        #print(print_board)
         if start_screen:
 
             return_val = show_startscreen(clock)
