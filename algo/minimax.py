@@ -84,9 +84,11 @@ def next_move(board: chess.BoardT) -> chess.Move:
     final_move = None
     stime = time()
     assert not board.is_game_over()
+    
     final_score, final_move = next_move_restricted(
         board, max_depth=initial_depth)
-    for extension in range(depth_extension_limit):
+
+    for extension in range(1, depth_extension_limit):
         if time() - stime >= timeout:
             break
         score, move = next_move_restricted(
