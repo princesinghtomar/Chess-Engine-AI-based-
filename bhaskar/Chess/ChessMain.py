@@ -382,6 +382,19 @@ def is_fill_function():
 
     return old_board
 
+
+def count_pieces(s):
+    number_of_piece = 0
+    for i in range(0,len(s)):
+        if s[i] >= 'a' and s[i]<='z':
+            number_of_piece +=  1
+        elif s[i]>='A' and s[i]<'Z':
+            number_of_piece += 1
+        elif s[i] == ' ' :
+            break
+        
+    return number_of_piece
+
 def board_to_fen(board,color_white,x,half_move,full_move):
     temp_color = 'w'
     if color_white:
@@ -406,6 +419,7 @@ def board_to_fen(board,color_white,x,half_move,full_move):
             s.write('/')
         # Move one position back to overwrite last '/'
         s.seek(s.tell() - 1)
+        #var = count_pieces(s.getvalue())
         color_string = " " + temp_color + " "
         s.write(color_string) 
         # If you do not have the additional information choose what to put
@@ -466,8 +480,10 @@ def main():
     pvcf = False
     full_move = 1
     half_move = 0
+    prev_half = 0
     preference = 0
     flag_undo = False
+    prev_bstring=-1
     #if_fill_or_fischer = False
     msg = ''
     while running:
@@ -477,7 +493,6 @@ def main():
         #print(convert_c2p(gs.enpassantPossible))
 
         if start_screen:
-
             return_val = show_startscreen(clock)
             screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
             screen.fill(p.Color(0x000F0F))
@@ -487,6 +502,9 @@ def main():
             pvcn = return_val[3]
             pvcf = return_val[4]
             full_move = 1
+            half_move = 0
+            prev_half = 0
+            prev_bstring = -1
 
             if pvcf or pvcn:
                 temp_pref = input("Enter Your Preference (W/B) :")
@@ -589,10 +607,12 @@ def main():
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:  # undo a move by pressing z
                     # need to implement this using undo button also %%
-                    if(gs.whiteToMove and full_move > 1 and not moveMade):
+                    if(gs.whiteToMove and full_move > 1  ):
+                        #print("hello 1")
                         full_move-=1
-                        flag_undo = True    
-                    #flag_undo = False
+                    if(half_move >0):
+                        half_move-=1
+                    flag_undo = True 
                     gs.undoMove()
                     moveMade = True
                     animate = False
@@ -610,6 +630,9 @@ def main():
                     gs.staleMate = False
                     gs.checkMate = False
                     full_move = 1
+                    half_move = 0
+                    prev_half = 0
+                    prev_bstring = -1
                     gs.checks = False
                     gs.board = prev_board
 
@@ -632,12 +655,23 @@ def main():
 
         if moveMade:
             if(gs.whiteToMove and not flag_undo):
+                #print("hello 3")
                 full_move +=1
-            else:
-                flag_undo = False
+            if(not flag_undo):
+                half_move+=1
+            flag_undo = False
+            if(len(gs.moveLog)>=1):
+                r,c = (gs.moveLog[-1].endRow,gs.moveLog[-1].endCol)
+                if(gs.board[r][c][1] == 'p'):
+                    half_move = 0 
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
             validMoves = gs.getValidMoves()
+            #board_to_fen(gs.board,gs.whiteToMove,gs.enpassantPossible,half_move,full_move )
+            var_board = count_pieces(print_board)
+            if(var_board!=prev_bstring):
+                half_move=0
+            prev_bstring = var_board
             moveMade = False
             animate = False
             # if(gs.moveLog[-1]):
