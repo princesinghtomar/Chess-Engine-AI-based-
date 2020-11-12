@@ -1,3 +1,5 @@
+#include "gamestate.h"
+#include "move.h"
 #include <climits>
 #include <ctime>
 #include <functional>
@@ -8,33 +10,18 @@ using namespace std;
 #define SCORE_MAX INT_MAX
 #define SCORE_MIN INT_MIN
 
-class Move {
-public:
-	int temp;
-	bool is_null(){};
-};
-
-class Board {
-public:
-	int temp;
-	vector<Move> legal_moves();
-	bool is_game_over();
-	void push(Move);
-	Move pop();
-};
-
 Move final_move;
 int timeout = 3 * CLOCKS_PER_SEC, stime;
 
-int evaluate(const Board &board);
+int evaluate(const GameState &board);
 
-int minimax(Board &board, int alpha, int beta, bool maximizer, int cur_depth, int max_depth, Move &ret_move);
+int minimax(GameState &board, int alpha, int beta, bool maximizer, int cur_depth, int max_depth, Move &ret_move);
 
-int next_move_restricted(Board &board, int max_depth, Move &ret_move);
+int next_move_restricted(GameState &board, int max_depth, Move &ret_move);
 
-Move next_move(Board &board);
+Move next_move(GameState &board);
 
-Move next_move(Board &board) {
+Move next_move(GameState &board) {
 	int initial_depth = 4,
 		max_depth_lim = 10;
 	final_move = Move(); // a null move
@@ -58,14 +45,14 @@ Move next_move(Board &board) {
 	return final_move;
 }
 
-int next_move_restricted(Board &board, int max_depth, Move &ret_move) {
+int next_move_restricted(GameState &board, int max_depth, Move &ret_move) {
 	int score = minimax(board, SCORE_MIN, SCORE_MAX, true, 0, max_depth, ret_move);
 	if (ret_move.is_null())
 		score = SCORE_MIN;
 	return score;
 }
 
-int minimax(Board &board, int alpha, int beta, bool maximizer, int cur_depth, int max_depth, Move &ret_move) {
+int minimax(GameState &board, int alpha, int beta, bool maximizer, int cur_depth, int max_depth, Move &ret_move) {
 	if (board.is_game_over() || cur_depth == max_depth)
 		return evaluate(board);
 
@@ -73,7 +60,7 @@ int minimax(Board &board, int alpha, int beta, bool maximizer, int cur_depth, in
 	if (!final_move.is_null() && clock() - stime > timeout)
 		return (maximizer ? SCORE_MAX : SCORE_MIN);
 
-	auto moves = board.legal_moves();
+	auto moves = board.get_legal_moves();
 	ret_move = Move();
 	int best_score;
 	bool (*is_better_score)(int, int);
