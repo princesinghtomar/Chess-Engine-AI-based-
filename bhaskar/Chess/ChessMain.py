@@ -238,7 +238,7 @@ def show_endscreen(clock, msg):
     return True
 
 
-def is_random_function():
+""" def is_random_function():
     old_board = [
         ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
         ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
@@ -248,12 +248,26 @@ def is_random_function():
         ["--", "--", "--", "--", "--", "--", "--", "--"],
         ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
         ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-    random.shuffle(old_board[0])
-    random.shuffle(old_board[7])
+    #random.shuffle(old_board[0])
+    #random.shuffle(old_board[7])
     return old_board
+ """
 
+def random960():
+    start = ["R", "K", "R"]         # Subsequent order unchanged by insertions.
+    #
+    for piece in ["Q", "N", "N"]:
+        start.insert(random.choice(range(len(start)+1)), piece)
+    #
+    bishpos = random.choice(range(len(start)+1))
+    start.insert(bishpos, "B")
+    start.insert(random.choice(range(bishpos + 1, len(start) + 1, 2)), "B")
+    #print(random960())
+    return start
+    return ''.join(start).upper()
+ 
 
-def is_fischer_function():
+""" def is_fischer_function():
     old_board = is_random_function()
     rook_flag = 0
     idx = 0
@@ -285,8 +299,30 @@ def is_fischer_function():
                 old_board[idx][4] = x
                 break
 
-    return old_board
+    return old_board """
 
+
+def is_fischer_function():
+    old_board = [
+        ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+        ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["--", "--", "--", "--", "--", "--", "--", "--"],
+        ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+        ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+    start = random960()
+    #print(start)
+    black_start = start
+    white_start = start
+    for i in range(0,2):
+        print(i)
+        old_board[0][i] = "b" + black_start[i]
+        old_board[7][i] = "w" + white_start[i]
+
+    #print(old_board)
+    return old_board
 
 def is_fill_function():
     old_board = [
@@ -346,7 +382,12 @@ def is_fill_function():
 
     return old_board
 
-def board_to_fen(board):
+def board_to_fen(board,color_white):
+    temp_color = 'w'
+    if color_white:
+        temp_color = 'w'
+    else:
+        temp_color = 'b'
     # Use StringIO to build string more efficiently than concatenating
     with io.StringIO() as s:
         for row in board:
@@ -365,8 +406,10 @@ def board_to_fen(board):
             s.write('/')
         # Move one position back to overwrite last '/'
         s.seek(s.tell() - 1)
+        color_string = " " + temp_color + " "
+        s.write(color_string) 
         # If you do not have the additional information choose what to put
-        s.write(' w KQkq - 0 1')
+        s.write('KQkq - 0 1')
         return s.getvalue()
 
 # this will be main driver it will handle
@@ -403,7 +446,7 @@ def main():
     #if_fill_or_fischer = False
     msg = ''
     while running:
-        #print_board = board_to_fen(gs.board)
+        #print_board = board_to_fen(gs.board,gs.whiteToMove)
         #print(print_board)
         if start_screen:
 
