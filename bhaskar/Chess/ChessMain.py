@@ -262,7 +262,6 @@ def random960():
     bishpos = random.choice(range(len(start)+1))
     start.insert(bishpos, "B")
     start.insert(random.choice(range(bishpos + 1, len(start) + 1, 2)), "B")
-    #print(random960())
     return start
     return ''.join(start).upper()
  
@@ -316,8 +315,8 @@ def is_fischer_function():
     #print(start)
     black_start = start
     white_start = start
-    for i in range(0,2):
-        print(i)
+    for i in range(0,8):
+        #print(i)
         old_board[0][i] = "b" + black_start[i]
         old_board[7][i] = "w" + white_start[i]
 
