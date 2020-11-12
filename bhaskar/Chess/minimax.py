@@ -1,11 +1,12 @@
-import chess
+# import chess
 import random
 from math import inf
 from time import time
 from typing import Tuple
+from ChessEngine import GameState, Move
 
 
-def evaluate(board: chess.BoardT, for_white: bool) -> int:
+def evaluate(board: GameState, for_white: bool) -> int:
     """
         returns an integer score representing current state of the board.
         Higher number is in favour of player given.
@@ -13,7 +14,7 @@ def evaluate(board: chess.BoardT, for_white: bool) -> int:
     return random.randint(0, 100)
 
 
-def minimax(board: chess.BoardT, alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, chess.Move]:
+def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, Move]:
     """
         returns an integer score and move which is the best current player can get
     """
@@ -48,10 +49,10 @@ def minimax(board: chess.BoardT, alpha: float, beta: float, maximizer: bool, cur
             beta = min(beta, score)
 
     for move in moves:
-        board.push(move)
+        board.makeMove(move)
         curr_score, _ = minimax(
             board, alpha, beta, not maximizer, curDepth+1, max_depth)
-        board.pop()
+        board.undoMove()
         if is_better_score(curr_score, best_score):
             best_score = curr_score
             best_move = move
@@ -62,7 +63,7 @@ def minimax(board: chess.BoardT, alpha: float, beta: float, maximizer: bool, cur
     return best_score, best_move
 
 
-def next_move_restricted(board: chess.BoardT, max_depth: int) -> Tuple[float, chess.Move]:
+def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]:
     """
         returns best move calculated till depth given
     """
@@ -73,7 +74,7 @@ def next_move_restricted(board: chess.BoardT, max_depth: int) -> Tuple[float, ch
     return score, move
 
 
-def next_move(board: chess.BoardT) -> chess.Move:
+def next_move(board: GameState) -> Move:
     """
         returns best move calculated till timeout
     """
@@ -84,7 +85,7 @@ def next_move(board: chess.BoardT) -> chess.Move:
     final_move = None
     stime = time()
     assert not board.is_game_over()
-    
+
     final_score, final_move = next_move_restricted(
         board, max_depth=initial_depth)
 
