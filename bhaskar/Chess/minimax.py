@@ -22,7 +22,12 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
     """
         returns an integer score and move which is the best current player can get
     """
-    if board.is_game_over() or curDepth == max_depth:
+    if board.is_game_over():
+        if board.staleMate:
+            return 0, None
+        if board.checkMate:
+            return (-inf if maximizer else +inf), None
+    if curDepth == max_depth:
         return evaluate(board, board.whiteToMove), None
 
     # sending inf so that the branch is ignored by parent
@@ -92,13 +97,16 @@ def next_move(board: GameState) -> Move:
 
     final_score, final_move = next_move_restricted(
         board, max_depth=initial_depth)
+    print(f"depth [{initial_depth}] done n chosen", final_score)
 
     for extension in range(1, depth_extension_limit):
         if time() - stime >= timeout:
             break
         score, move = next_move_restricted(
             board, max_depth=initial_depth+extension)
+        print(f"depth [{initial_depth+extension}] done")
         if move is not None and score > final_score:
             final_score, final_move = score, move
+            print(f"depth [{initial_depth+extension}] chosen", final_score)
 
     return final_move
