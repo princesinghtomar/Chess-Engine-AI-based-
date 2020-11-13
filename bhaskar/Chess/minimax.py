@@ -49,7 +49,7 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
             beta = min(beta, score)
 
     for move in moves:
-        board.makeMove(move)
+        board.makeMove(move, by_AI=True)
         curr_score, _ = minimax(
             board, alpha, beta, not maximizer, curDepth+1, max_depth)
         board.undoMove()

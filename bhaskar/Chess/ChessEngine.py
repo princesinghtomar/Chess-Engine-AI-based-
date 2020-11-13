@@ -38,7 +38,7 @@ class GameState():
 
 # takes a move as  a parameter and executes it
 
-    def makeMove(self, move):
+    def makeMove(self, move, by_AI=False):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)  # log the move so we can undo later
@@ -51,7 +51,10 @@ class GameState():
 
         # pawn promotion
         if move.isPawnPromotion:
-            promotedPiece = input("Promote to Q, R, B, or N: ")
+            if by_AI:
+                promotedPiece = "Q"
+            else:
+                promotedPiece = input("Promote to Q, R, B, or N: ")
             self.board[move.endRow][move.endCol] = move.pieceMoved[0] + promotedPiece
 
         #update enpassant variable
