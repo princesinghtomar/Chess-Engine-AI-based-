@@ -596,7 +596,7 @@ def main():
                     print(move.getChessNotation())
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
-                            gs.makeMove(validMoves[i])
+                            gs.makeMove(validMoves[i], by_AI=True)
                             moveMade = True
                             animate = True
              
