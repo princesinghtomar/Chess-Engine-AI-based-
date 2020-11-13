@@ -14,6 +14,10 @@ class GameState():
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+        self.blackleft = 0
+        self.blackright = 7
+        self.whiteleft = 0
+        self.whiteright = 7
         self.moveFunctions = {'p': self.getPawnMoves, 'R': self.getRookMoves,
                               'N': self.getKnightMoves, 'B': self.getBishopMoves, 'K': self.getKingMoves, 'Q': self.getQueenMoves}
         self.whiteToMove = True

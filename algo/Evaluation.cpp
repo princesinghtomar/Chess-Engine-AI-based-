@@ -1,6 +1,9 @@
 #include "Evaluation.h"
 #include <string.h>
 
+#define WHITE 0
+#define BLACK 1
+
 int pawn_value = 100;
 int knight_value = 300;
 int bishop_value = 300;
@@ -16,12 +19,13 @@ int queen_phase_val = 4;
 
 struct eval_data
 {
-    char position[80];
-
-    int wp, wr, wn, wb, wq;
-    int bp, br, bn, bb, bq;
-    int pos_wp[8];
-    int pos_wr[8];
+    int p[2], r[2], n[2], b[2], q[2];
+    int pos_p[2][8];
+    int pos_r[2][2];
+    int pos_n[2][2];
+    int pos_b[2][2];
+    int pos_q[2];
+    int pos_k[2];
 
     // int BISHOP_PAIR;
     // int P_KNIGHT_PAIR;
@@ -186,59 +190,11 @@ int passed_pawn_pcsq[64] = {
 
 void initialize()
 {
-    int len = strlen(e.position);
-    for (int i = 0; i < len; i++)
-    {
-        switch (e.position[i])
-        {
-        case 'p':
-            e.bp++;
-
-            break;
-        case 'n':
-            e.bn++;
-            break;
-        case 'b':
-            e.bb++;
-            break;
-        case 'r':
-            e.br++;
-            break;
-        case 'q':
-            e.bq++;
-            break;
-
-        case 'P':
-            e.pos_wp[e.wp] = i;
-            e.wp++;
-
-            break;
-        case 'N':
-            e.wn++;
-            break;
-        case 'B':
-            e.wb++;
-            break;
-        case 'R':
-            e.wr++;
-            break;
-        case 'Q':
-            e.wq++;
-            break;
-
-        default:
-            break;
-        }
-    }
 }
 
-int calc_npm(char color)
+int calc_npm(int color)
 {
-    int ret = 0;
-    if (color == 'b')
-        ret = e.bb * bishop_value + e.bn * knight_value + e.br * rook_value + e.bq * queen_value;
-    else
-        ret = e.wb * bishop_value + e.wn * knight_value + e.wr * rook_value + e.wq * queen_value;
+    int ret = e.b[color] * bishop_value + e.n[color] * knight_value + e.r[color] * rook_value + e.q[color] * queen_value;
     return ret;
 }
 
@@ -253,16 +209,15 @@ int end_game()
 int calc_phase()
 {
     int tmax = 4 * (bishop_phase_val + knight_phase_val + rook_phase_val) + 2 * queen_phase_val, tmin = 0;
-    int phase = (e.bb + e.wb) * bishop_phase_val + (e.bn + e.wn) * knight_phase_val;
-    phase += (e.br + e.wr) * rook_phase_val + (e.bq + e.wq) * queen_phase_val;
+    int phase = (e.b[BLACK] + e.b[WHITE]) * bishop_phase_val + (e.n[BLACK] + e.n[WHITE]) * knight_phase_val;
+    phase += (e.r[BLACK] + e.r[WHITE]) * rook_phase_val + (e.q[BLACK] + e.q[WHITE]) * queen_phase_val;
     int ret = (phase * 128 + 8) / (tmax - tmin);
     return ret;
 }
 
-int evaluate(char *str)
+int evaluate(char pos[8][8])
 {
     int ret = 0;
-    strcpy(e.position, str);
     initialize();
     int phase = calc_phase();
     int mid_val = middle_game();

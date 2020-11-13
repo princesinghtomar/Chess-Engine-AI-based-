@@ -6,6 +6,7 @@ import ChessEngine
 import random
 import io
 
+
 # from Chess import ChessEngine  #this is not working
 
 WIDTH = HEIGHT = 800  # 400 is another option
@@ -262,7 +263,6 @@ def random960():
     bishpos = random.choice(range(len(start)+1))
     start.insert(bishpos, "B")
     start.insert(random.choice(range(bishpos + 1, len(start) + 1, 2)), "B")
-    #print(random960())
     return start
     return ''.join(start).upper()
  
@@ -316,8 +316,8 @@ def is_fischer_function():
     #print(start)
     black_start = start
     white_start = start
-    for i in range(0,2):
-        print(i)
+    for i in range(0,8):
+        #print(i)
         old_board[0][i] = "b" + black_start[i]
         old_board[7][i] = "w" + white_start[i]
 
@@ -382,7 +382,20 @@ def is_fill_function():
 
     return old_board
 
-def board_to_fen(board,color_white):
+
+def count_pieces(s):
+    number_of_piece = 0
+    for i in range(0,len(s)):
+        if s[i] >= 'a' and s[i]<='z':
+            number_of_piece +=  1
+        elif s[i]>='A' and s[i]<'Z':
+            number_of_piece += 1
+        elif s[i] == ' ' :
+            break
+        
+    return number_of_piece
+
+def board_to_fen(board,color_white,x,half_move,full_move):
     temp_color = 'w'
     if color_white:
         temp_color = 'w'
@@ -406,11 +419,34 @@ def board_to_fen(board,color_white):
             s.write('/')
         # Move one position back to overwrite last '/'
         s.seek(s.tell() - 1)
+        #var = count_pieces(s.getvalue())
         color_string = " " + temp_color + " "
         s.write(color_string) 
         # If you do not have the additional information choose what to put
-        s.write('KQkq - 0 1')
+        s.write('KQkq ')
+        s.write(convert_c2p(x))
+        s.write(' ')
+        s.write(str(half_move))
+        s.write(' ')
+        s.write(str(full_move))
+        #s.write(' 0 1')
         return s.getvalue()
+
+def convert_c2p(x):
+    if not x : 
+        li =('-')
+        return li
+    if x:
+        ranksToRows = {"1": 7, "2": 6, "3": 5,
+                    "4": 4, "5": 3, "6": 2, "7": 1, "8": 0}
+
+        rowsToRanks = {v: k for k, v in ranksToRows.items()}  # reversing keys
+        filesToCols = {"a": 0, "b": 1, "c": 2,
+                    "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
+
+        colsToFiles = {v: k for k, v in filesToCols.items()}
+        #y1 = x[]
+        return colsToFiles[x[1]]+rowsToRanks[x[0]]
 
 # this will be main driver it will handle
 # user input and update the graphics
@@ -429,7 +465,7 @@ def main():
     gs = ChessEngine.GameState()
     prev_board = gs.board
     
-    # print(gs.board)
+    #print(chess.Board())
 
     validMoves = gs.getValidMoves()
     moveMade = False  # flag variable when a move is made
@@ -442,14 +478,21 @@ def main():
     gameOver = False
     pvcn = False
     pvcf = False
+    full_move = 1
+    half_move = 0
+    prev_half = 0
     preference = 0
+    flag_undo = False
+    prev_bstring=-1
     #if_fill_or_fischer = False
     msg = ''
     while running:
-        #print_board = board_to_fen(gs.board,gs.whiteToMove)
-        #print(print_board)
-        if start_screen:
+        print_board = board_to_fen(gs.board,gs.whiteToMove,gs.enpassantPossible,half_move,full_move )
+        print(print_board)
+        #print(gs.enpassantPossible)
+        #print(convert_c2p(gs.enpassantPossible))
 
+        if start_screen:
             return_val = show_startscreen(clock)
             screen = p.display.set_mode((WIDTH+50, 50+HEIGHT))
             screen.fill(p.Color(0x000F0F))
@@ -458,6 +501,10 @@ def main():
             is_random = return_val[2]
             pvcn = return_val[3]
             pvcf = return_val[4]
+            full_move = 1
+            half_move = 0
+            prev_half = 0
+            prev_bstring = -1
 
             if pvcf or pvcn:
                 temp_pref = input("Enter Your Preference (W/B) :")
@@ -479,10 +526,27 @@ def main():
                 gs.board = prev_board
                 if is_fischer:
                     is_fischer = False
-                # else:
-                #     pvcf=False
+                flag_temp = 0
+                for k1 in range(0,8):
+                    if gs.board[0][k1][1]=='R' and not flag_temp:
+                        flag_temp+=1
+                        gs.blackleft = k1
+                    elif flag_temp:
+                        gs.blackright = k1
 
-                # print("1")
+                flag_temp = 0
+                for k1 in range(0,8):
+                    if gs.board[7][k1][1]=='R' and not flag_temp:
+                        flag_temp+=1
+                        gs.whiteleft = k1
+                    elif flag_temp:
+                        gs.whiteright = k1
+                
+                print(gs.blackright)
+                print(gs.blackleft)
+                print(gs.whiteright)
+                print(gs.whiteleft)
+                
             elif not is_fischer or not is_random or not pvcf:
                 gs.board = [
                     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -513,7 +577,6 @@ def main():
             elif e.type == p.MOUSEBUTTONDOWN :
                 # print("Inside 2nd")
                 if not gameOver:  # check here for bug
-                    
                     if ((preference == 0) or (preference == 1 and gs.whiteToMove) or (preference == 2 and gs.whiteToMove == 0)):
                         # inside_c=False
                         location = p.mouse.get_pos()  # get mouse coordinates
@@ -561,6 +624,12 @@ def main():
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:  # undo a move by pressing z
                     # need to implement this using undo button also %%
+                    if(gs.whiteToMove and full_move > 1  ):
+                        #print("hello 1")
+                        full_move-=1
+                    if(half_move >0):
+                        half_move-=1
+                    flag_undo = True 
                     gs.undoMove()
                     moveMade = True
                     animate = False
@@ -577,6 +646,10 @@ def main():
                     animate = False
                     gs.staleMate = False
                     gs.checkMate = False
+                    full_move = 1
+                    half_move = 0
+                    prev_half = 0
+                    prev_bstring = -1
                     gs.checks = False
                     gs.board = prev_board
 
@@ -598,9 +671,24 @@ def main():
                     continue
 
         if moveMade:
+            if(gs.whiteToMove and not flag_undo):
+                #print("hello 3")
+                full_move +=1
+            if(not flag_undo):
+                half_move+=1
+            flag_undo = False
+            if(len(gs.moveLog)>=1):
+                r,c = (gs.moveLog[-1].endRow,gs.moveLog[-1].endCol)
+                if(gs.board[r][c][1] == 'p'):
+                    half_move = 0 
             if animate:
                 animateMove(gs.moveLog[-1], screen, gs.board, clock)
             validMoves = gs.getValidMoves()
+            #board_to_fen(gs.board,gs.whiteToMove,gs.enpassantPossible,half_move,full_move )
+            var_board = count_pieces(print_board)
+            if(var_board!=prev_bstring):
+                half_move=0
+            prev_bstring = var_board
             moveMade = False
             animate = False
             # if(gs.moveLog[-1]):
