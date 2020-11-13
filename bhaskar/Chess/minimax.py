@@ -18,14 +18,14 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
     """
         returns an integer score and move which is the best current player can get
     """
-    if board.is_game_over() or curDepth == max_depth:
-        return evaluate(board, board.turn), None
+    if board.gameOver or curDepth == max_depth:
+        return evaluate(board, board.whiteToMove), None
 
     # sending inf so that the branch is ignored by parent
     if final_move is not None and time() - stime > timeout:
         return +inf if maximizer else -inf, None
 
-    moves = list(board.legal_moves)
+    moves = list(board.getValidMoves())
     assert moves != []
     best_move = None
     if maximizer:
@@ -81,10 +81,10 @@ def next_move(board: GameState) -> Move:
     global timeout, stime, final_move
     initial_depth = 4
     depth_extension_limit = 10
-    timeout = 3.5  # in seconds
+    timeout = 2.5  # in seconds
     final_move = None
     stime = time()
-    assert not board.is_game_over()
+    assert not board.gameOver
 
     final_score, final_move = next_move_restricted(
         board, max_depth=initial_depth)

@@ -6,6 +6,7 @@ import ChessEngine
 import random
 import io
 import chess
+from minimax import next_move
 
 # from Chess import ChessEngine  #this is not working
 
@@ -475,7 +476,6 @@ def main():
     final = ()
     sqSelected = ()  # keeps track of last call of user
     playerClicks = []  # keeps track of players click
-    gameOver = False
     pvcn = False
     pvcf = False
     full_move = 1
@@ -540,7 +540,7 @@ def main():
                     ["--", "--", "--", "--", "--", "--", "--", "--"],
                     ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
                     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-            gameOver = False
+            gs.gameOver = False
             start_screen = False
 
             continue
@@ -559,7 +559,7 @@ def main():
                                 
             elif e.type == p.MOUSEBUTTONDOWN :
                 # print("Inside 2nd")
-                if not gameOver:  # check here for bug
+                if not gs.gameOver:  # check here for bug
                     if ((preference == 0) or (preference == 1 and gs.whiteToMove) or (preference == 2 and gs.whiteToMove == 0)):
                         # inside_c=False
                         location = p.mouse.get_pos()  # get mouse coordinates
@@ -592,7 +592,7 @@ def main():
                 # print("Inside 1st")
                 if ((preference==1 and not gs.whiteToMove)  or ( preference==2 and gs.whiteToMove )) :
                     # inside_c=True
-                    move = ChessEngine.Move( (1,1),(2,1), gs.board)
+                    move = next_move(gs)
                     print(move.getChessNotation())
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
@@ -684,7 +684,7 @@ def main():
 
         drawGameState(screen, gs, validMoves, sqSelected, initial, final)
         if gs.checkMate:
-            gameOver = True
+            gs.gameOver = True
             if gs.whiteToMove:
                 drawText(screen, 'Black wins by checkmate')
                 msg = 'Black wins by checkmate'
@@ -693,7 +693,7 @@ def main():
                 msg = 'White wins by checkmate'
             end_screen = True
         elif gs.staleMate:
-            gameOver = True
+            gs.gameOver = True
             drawText(screen, 'Stalemate')
             msg = 'Draw'
             end_screen = True
@@ -704,7 +704,7 @@ def main():
                 running = False
             gs = ChessEngine.GameState()
             validMoves = gs.getValidMoves()
-            gameOver = False
+            gs.gameOver = False
             final = ()
             initial = ()
             sqSelected = ()
