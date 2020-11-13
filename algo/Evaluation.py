@@ -17,55 +17,65 @@ bishop_phase_val = 1
 rook_phase_val = 2
 queen_phase_val = 4
 
-p = n = b = r = q = k = [0, 0]
-pos_p = pos_n = pos_b = pos_r = pos_q = pos_k = [[], []]
-
 
 def initialize(board):
     """
     initialize variables for evaluation
     """
-    p = n = b = r = q = [0, 0]
-    pos_p = pos_n = pos_b = pos_r = pos_q = pos_k = [[], []]
+    global p, n, b, r, q, k, pos_p, pos_n, pos_b, pos_r, pos_q, pos_k
+    p = [0, 0]
+    n = [0, 0]
+    b = [0, 0]
+    r = [0, 0]
+    q = [0, 0]
+    k = [0, 0]
+    pos_p = [[], []]
+    pos_n = [[], []]
+    pos_b = [[], []]
+    pos_r = [[], []]
+    pos_q = [[], []]
+    pos_k = [[], []]
     for i in range(8):
         for j in range(8):
             square = board[i][j]
-            if square == 'wp':
+            if square == "wp":
                 pos_p[W].append((i, j))
                 p[W] += 1
-            elif square == 'wN':
+            elif square == "wN":
                 pos_n[W].append((i, j))
                 n[W] += 1
-            elif square == 'wB':
+            elif square == "wB":
                 pos_b[W].append((i, j))
                 b[W] += 1
-            elif square == 'wR':
+            elif square == "wR":
                 pos_r[W].append((i, j))
                 r[W] += 1
-            elif square == 'wQ':
+            elif square == "wQ":
                 pos_q[W].append((i, j))
                 q[W] += 1
-            elif square == 'wK':
+            elif square == "wK":
                 pos_k[W].append((i, j))
                 k[W] += 1
-            if square == 'bp':
-                pos_p[B].append((i, j))
+            elif square == "bp":
+                pos_p[B].append((7-i, 7-j))
                 p[B] += 1
-            elif square == 'bN':
-                pos_n[B].append((i, j))
+            elif square == "bN":
+                pos_n[B].append((7-i, 7-j))
                 n[B] += 1
-            elif square == 'bB':
-                pos_b[B].append((i, j))
+            elif square == "bB":
+                pos_b[B].append((7-i, 7-j))
                 b[B] += 1
-            elif square == 'bR':
-                pos_r[B].append((i, j))
+            elif square == "bR":
+                pos_r[B].append((7-i, 7-j))
                 r[B] += 1
-            elif square == 'bQ':
-                pos_q[B].append((i, j))
+            elif square == "bQ":
+                pos_q[B].append((7-i, 7-j))
                 q[B] += 1
-            elif square == 'bK':
-                pos_k[B].append((i, j))
+            elif square == "bK":
+                pos_k[B].append((7-i, 7-j))
                 k[B] += 1
+            else:
+                pass
 
 
 pawn_mg = [
@@ -389,7 +399,7 @@ def calc_phase():
     for i in range(2):
         phase += b[i] * bishop_phase_val + n[i] * knight_phase_val + \
             r[i] * rook_phase_val + q[i] * queen_phase_val
-    ret = (phase * 128 + 8) / (tmax - tmin)
+    ret = (phase * 128 + 8) // (tmax - tmin)
     return ret
 
 
@@ -398,9 +408,12 @@ def evaluate(board):
     Gives an integer that tells the evaluation of the current board state
     """
     initialize(board)
+    print(p, n, b, r, q, k)
+    print(pos_p, pos_n, pos_b, pos_r, pos_q, pos_k)
     phase = calc_phase()
     mid_val = mid_game()
     end_val = end_game()
+    print(phase, mid_val, end_val)
     # ks = king_safety()
     ret = (mid_val * phase + (128 - phase) * end_val) / 128
     return ret
