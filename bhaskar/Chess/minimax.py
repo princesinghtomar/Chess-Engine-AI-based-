@@ -12,9 +12,11 @@ def evaluate(board: GameState, for_white: bool) -> int:
         returns an integer score representing current state of the board.
         Higher number is in favour of player given.
     """
+    eval_stime = time()
     ret = evaluate_board(board.board)
     if not for_white:
         ret *= -1
+    print("eval time ", time() - eval_stime)
     return ret
 
 

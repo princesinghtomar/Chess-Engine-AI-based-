@@ -5,7 +5,7 @@ import pygame as p
 import ChessEngine
 import random
 import io
-# import chess
+from time import time
 from minimax import next_move
 
 
@@ -612,7 +612,9 @@ def main():
                 # print("Inside 1st")
                 if ((preference == 1 and not gs.whiteToMove) or (preference == 2 and gs.whiteToMove)):
                     # inside_c=True
+                    move_stime = time()
                     move = next_move(gs)
+                    print("move time ", time()-move_stime)
                     print(move.getChessNotation())
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
