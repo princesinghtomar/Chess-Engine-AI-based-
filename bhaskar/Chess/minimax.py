@@ -4,6 +4,7 @@ from math import inf
 from time import time
 from typing import Tuple
 from ChessEngine import GameState, Move
+from Evaluation import evaluate_board
 
 
 def evaluate(board: GameState, for_white: bool) -> int:
@@ -11,7 +12,10 @@ def evaluate(board: GameState, for_white: bool) -> int:
         returns an integer score representing current state of the board.
         Higher number is in favour of player given.
     """
-    return random.randint(0, 100)
+    ret = evaluate_board(board.board)
+    if not for_white:
+        ret *= -1
+    return ret
 
 
 def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, Move]:
