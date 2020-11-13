@@ -8,6 +8,7 @@ import io
 import chess
 from minimax import next_move
 
+
 # from Chess import ChessEngine  #this is not working
 
 WIDTH = HEIGHT = 800  # 400 is another option
@@ -526,10 +527,27 @@ def main():
                 gs.board = prev_board
                 if is_fischer:
                     is_fischer = False
-                # else:
-                #     pvcf=False
+                flag_temp = 0
+                for k1 in range(0,8):
+                    if gs.board[0][k1][1]=='R' and not flag_temp:
+                        flag_temp+=1
+                        gs.blackleft = k1
+                    elif flag_temp:
+                        gs.blackright = k1
 
-                # print("1")
+                flag_temp = 0
+                for k1 in range(0,8):
+                    if gs.board[7][k1][1]=='R' and not flag_temp:
+                        flag_temp+=1
+                        gs.whiteleft = k1
+                    elif flag_temp:
+                        gs.whiteright = k1
+                
+                print(gs.blackright)
+                print(gs.blackleft)
+                print(gs.whiteright)
+                print(gs.whiteleft)
+                
             elif not is_fischer or not is_random or not pvcf:
                 gs.board = [
                     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
