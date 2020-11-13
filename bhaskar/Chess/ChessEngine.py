@@ -34,15 +34,18 @@ class GameState():
         self.blackCastleQueenSide = True
         # self.currentCastlingRight = CastlingRights(True, True, True, True)
         self.castleRightsLog = [CastleRights(self.whiteCastleKingSide, self.blackCastleKingSide, self.whiteCastleQueenSide, self.blackCastleQueenSide)]
+        self.cached_legalMoves = []
+        self.cache_present = False
 
 
 # takes a move as  a parameter and executes it
-
     def makeMove(self, move, by_AI=False):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)  # log the move so we can undo later
         self.whiteToMove = not self.whiteToMove  # swap players
+        self.cached_legalMoves = []
+        self.cache_present = None
         # update king's location if moved
         if move.pieceMoved == 'wK':
             self.whiteKingLocation = (move.endRow, move.endCol)
@@ -85,6 +88,8 @@ class GameState():
     def undoMove(self):
         if len(self.moveLog) != 0:  # make sure there is move to undo
             move = self.moveLog.pop()
+            self.cached_legalMoves = []
+            self.cache_present = None
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove  # switch turn back
@@ -120,6 +125,8 @@ class GameState():
 
 # all moves considering checks
     def getValidMoves(self):
+        if self.cache_present:
+            return self.cached_legalMoves
         moves = []
         self.inCheck, self.pins, self.checks = self.checkForPinsAndChecks()
         if self.whiteToMove:
@@ -171,6 +178,8 @@ class GameState():
         else:
             self.checkMate = False
             self.staleMate = False
+        self.cache_present = True
+        self.cached_legalMoves = moves[:]
         return moves
 
     # Determine if game works
@@ -518,6 +527,11 @@ class GameState():
                     self.blackCastleKingSide = False
                 elif move.startCol == 0:
                     self.blackCastleQueenSide = False
+    
+    def is_game_over(self):
+        self.getValidMoves()
+        return self.staleMate or self.checkMate
+
 
             
 class CastleRights():
