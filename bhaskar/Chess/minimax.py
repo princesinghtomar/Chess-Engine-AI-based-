@@ -16,7 +16,11 @@ def evaluate(board: GameState, for_white: bool) -> int:
     ret = evaluate_board(board.board)
     if not for_white:
         ret *= -1
-    print("eval time ", time() - eval_stime)
+    duration = time()-eval_stime
+    global eval_time, evals_cnt
+    eval_time += duration
+    evals_cnt += 1
+    # print(f"eval time {duration}")
     return ret
 
 
@@ -61,6 +65,8 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
 
     for move in moves:
         board.makeMove(move, by_AI=True)
+        global moves_cnt
+        moves_cnt += 1
         curr_score, _ = minimax(
             board, alpha, beta, not maximizer, curDepth+1, max_depth)
         board.undoMove()
@@ -78,8 +84,15 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
     """
         returns best move calculated till depth given
     """
+    depth_stime = time()
+    global eval_time, moves_cnt, evals_cnt
+    eval_time = 0
+    moves_cnt = 0
+    evals_cnt = 0
     score, move = minimax(board, alpha=-inf, beta=+inf,
                           maximizer=True, curDepth=0, max_depth=max_depth)
+    print(f"depth {max_depth} done in {time()-depth_stime}.")
+    print(f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}")
     if not move:
         return -inf, None
     return score, move
@@ -99,14 +112,13 @@ def next_move(board: GameState) -> Move:
 
     final_score, final_move = next_move_restricted(
         board, max_depth=initial_depth)
-    print(f"depth [{initial_depth}] done n chosen", final_score)
+    print(f"depth [{initial_depth}] chosen", final_score)
 
     for extension in range(1, depth_extension_limit):
         if time() - stime >= timeout:
             break
         score, move = next_move_restricted(
             board, max_depth=initial_depth+extension)
-        print(f"depth [{initial_depth+extension}] done")
         if move is not None and score > final_score:
             final_score, final_move = score, move
             print(f"depth [{initial_depth+extension}] chosen", final_score)

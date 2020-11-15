@@ -614,7 +614,7 @@ def main():
                     # inside_c=True
                     move_stime = time()
                     move = next_move(gs)
-                    print("move time ", time()-move_stime)
+                    print(f"move time {time()-move_stime}\n")
                     print(move.getChessNotation())
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
