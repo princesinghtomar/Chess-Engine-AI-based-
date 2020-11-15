@@ -45,7 +45,7 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
         best_score = -inf
 
         def is_better_score(curr, currbest):
-            return curr > currbest
+            return curr >= currbest
 
         def update_AB(score):
             nonlocal alpha
@@ -55,7 +55,7 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
         best_score = +inf
 
         def is_better_score(curr, currbest):
-            return curr < currbest
+            return curr <= currbest
 
         def update_AB(score):
             nonlocal beta
@@ -118,7 +118,7 @@ def next_move(board: GameState) -> Move:
             break
         score, move = next_move_restricted(
             board, max_depth=initial_depth+extension)
-        if move is not None and score > final_score:
+        if move is not None and score >= final_score:
             final_score, final_move = score, move
             print(f"depth ({initial_depth+extension}) chosen")
 
