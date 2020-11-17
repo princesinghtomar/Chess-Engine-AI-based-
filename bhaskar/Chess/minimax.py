@@ -1,4 +1,5 @@
-# import chess
+from multiprocessing import Process, Pipe, connection
+from multiprocessing.connection import Connection
 import random
 from math import inf
 from time import time
@@ -77,6 +78,11 @@ def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maxi
 
     return best_score, best_move
 
+def minimax_handler(conn:Connection ,board:GameState,moves_set:List[Move], max_depth:int):
+    score, move = minimax(board, moves=moves_set, alpha=-inf, beta=+inf,
+                          maximizer=True, curDepth=0, max_depth=max_depth)
+    conn.send(score)
+    conn.send(move)
 
 def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]:
     """
@@ -89,24 +95,39 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
     evals_cnt = 0
     moves = board.getValidMoves()
     length = len(moves)
-    # score, move = minimax(board, moves=moves, alpha=-inf, beta=+inf,
-    #                         maximizer=True, curDepth=0, max_depth=max_depth)
-    score, move = -inf, None
     step_size = length//6
+    moves_sets:List[List[Move]] = []
+    procs_list:List[Process] = []
+    conn_list:List[Connection] = []
+
     for start in range(0, length, step_size):
         end = start+step_size
         if length-end < step_size:
             end = length
-        moves_sbset = moves[start: end]
-        print(len(moves_sbset), "jiji")
-        curr_score, curr_move = minimax(board, moves=moves_sbset, alpha=-inf, beta=+inf,
-                                        maximizer=True, curDepth=0, max_depth=max_depth)
+        moves_sets.append(moves[start: end])
+
+    for moves_sb_set in moves_sets:
+        par_conn, ch_conn = Pipe()
+        p = Process(target=minimax_handler, args=(ch_conn, board,moves_sb_set, max_depth))
+        p.start()
+        procs_list.append(p)
+        conn_list.append(par_conn)
+    
+    score, move = -inf, None
+    for conn in conn_list:
+        curr_score:int = conn.recv()
+        curr_move:Move = conn.recv()
         if curr_score >= score:
-            print("hihi")
             score, move = curr_score, curr_move
+
+    for p in procs_list:
+        p.join()
+    
+
     print(
         f"depth [{max_depth}] done in {time()-depth_stime} score: {score}"
-        f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}")
+        # f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}"
+        )
     if not move:
         return -inf, None
     return score, move
