@@ -58,6 +58,7 @@ def acknowledge_screen(clock):
 
     while flag_start:
         screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
+        
         screen.fill(p.Color(0x000F0F))
         screen.blit(background2, (0, -16))
 
@@ -578,12 +579,17 @@ def main():
 
             # mouse handler
 
-            elif e.type == p.MOUSEBUTTONDOWN:
+            elif e.type == p.MOUSEBUTTONDOWN   :
                 # print("Inside 2nd")
                 if not gs.gameOver:  # check here for bug
                     if ((preference == 0) or (preference == 1 and gs.whiteToMove) or (preference == 2 and gs.whiteToMove == 0)):
                         # inside_c=False
                         location = p.mouse.get_pos()  # get mouse coordinates
+                        print(location)
+                        if location[0]>=800:
+                            location=(799,location[1])
+                        if location[1]>=800:
+                            location=(location[0],799)
                         col = location[0]//SQ_SIZE
                         row = location[1]//SQ_SIZE
                         if sqSelected == (row, col):  # reset if clicked on same block
@@ -765,6 +771,10 @@ def lastMove(screen, gs, initial, final):
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
+        print("here is selelected square")
+        print(sqSelected)
+        assert(r<8)
+        assert(c<8)
         # square selected is a piece that can be moved
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'):
             # highlight selected square
@@ -826,7 +836,7 @@ def animateMove(move, screen, board, clock):
     coords = []  # list of coords that the animation will move through
     dR = move.endRow - move.startRow
     dC = move.endCol - move.startCol
-    framesPerSquare = 10  # frames to move one square
+    framesPerSquare = 2  # frames to move one square
     frameCount = (abs(dR) + abs(dC))*framesPerSquare
     for frame in range(frameCount + 1):
         r, c = ((move.startRow + dR*frame/frameCount,
