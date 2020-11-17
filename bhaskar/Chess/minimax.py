@@ -2,7 +2,7 @@
 import random
 from math import inf
 from time import time
-from typing import Tuple
+from typing import Tuple, List
 from ChessEngine import GameState, Move
 from Evaluation import evaluate_board
 
@@ -22,7 +22,7 @@ def evaluate(board: GameState, for_white: bool) -> int:
     return ret
 
 
-def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, Move]:
+def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, Move]:
     """
         returns an integer score and move which is the best current player can get
     """
@@ -38,7 +38,7 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
     if final_move is not None and time() - stime > timeout:
         return +inf if maximizer else -inf, None
 
-    moves = list(board.getValidMoves())
+    # moves = list(board.getValidMoves())
     assert moves != []
     best_move = None
     if maximizer:
@@ -66,7 +66,7 @@ def minimax(board: GameState, alpha: float, beta: float, maximizer: bool, curDep
         global moves_cnt
         moves_cnt += 1
         curr_score, _ = minimax(
-            board, alpha, beta, not maximizer, curDepth+1, max_depth)
+            board, board.getValidMoves(), alpha, beta, not maximizer, curDepth+1, max_depth)
         board.undoMove()
         if is_better_score(curr_score, best_score):
             best_score = curr_score
@@ -87,8 +87,23 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
     eval_time = 0
     moves_cnt = 0
     evals_cnt = 0
-    score, move = minimax(board, alpha=-inf, beta=+inf,
-                          maximizer=True, curDepth=0, max_depth=max_depth)
+    moves = board.getValidMoves()
+    length = len(moves)
+    # score, move = minimax(board, moves=moves, alpha=-inf, beta=+inf,
+    #                         maximizer=True, curDepth=0, max_depth=max_depth)
+    score, move = -inf, None
+    step_size = length//6
+    for start in range(0, length, step_size):
+        end = start+step_size
+        if length-end < step_size:
+            end = length
+        moves_sbset = moves[start: end]
+        print(len(moves_sbset), "jiji")
+        curr_score, curr_move = minimax(board, moves=moves_sbset, alpha=-inf, beta=+inf,
+                                        maximizer=True, curDepth=0, max_depth=max_depth)
+        if curr_score >= score:
+            print("hihi")
+            score, move = curr_score, curr_move
     print(
         f"depth [{max_depth}] done in {time()-depth_stime} score: {score}"
         f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}")
