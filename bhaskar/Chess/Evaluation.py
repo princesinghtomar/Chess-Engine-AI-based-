@@ -403,30 +403,30 @@ def calc_phase():
     return ret
 
 
-def evaluate(board):
+def evaluate_board(board):
     """
     Gives an integer that tells the evaluation of the current board state
     """
     initialize(board)
-    print(p, n, b, r, q, k)
-    print(pos_p, pos_n, pos_b, pos_r, pos_q, pos_k)
+    # print(p, n, b, r, q, k)
+    # print(pos_p, pos_n, pos_b, pos_r, pos_q, pos_k)
     phase = calc_phase()
     mid_val = mid_game()
     end_val = end_game()
-    print(phase, mid_val, end_val)
+    # print(phase, mid_val, end_val)
     # ks = king_safety()
     ret = (mid_val * phase + (128 - phase) * end_val) / 128
     return ret
 
 
 # For testing
-board = [
-    ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-    ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-    ["--", "--", "--", "--", "--", "--", "--", "--"],
-    ["--", "--", "--", "--", "--", "--", "--", "--"],
-    ["--", "--", "--", "--", "--", "--", "--", "--"],
-    ["--", "--", "--", "--", "--", "--", "--", "--"],
-    ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
-    ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-print(evaluate(board))
+# board = [
+#     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
+#     ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
+#     ["--", "--", "--", "--", "--", "--", "--", "--"],
+#     ["--", "--", "--", "--", "--", "--", "--", "--"],
+#     ["--", "--", "--", "--", "--", "--", "--", "--"],
+#     ["--", "--", "--", "--", "--", "--", "--", "--"],
+#     ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
+#     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
+# print(evaluate(board))
