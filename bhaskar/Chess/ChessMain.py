@@ -5,7 +5,7 @@ import pygame as p
 import ChessEngine
 import random
 import io
-from time import time
+from time import time,sleep
 from minimax import next_move
 
 
@@ -17,7 +17,7 @@ SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15  # FOR ANIMATION LATER ON
 IMAGES = {}
 # some colors
-green = (0, 255, 0)
+green = 0xbb2205
 blue = (0, 0, 128)
 
 p_image = p.image.load("images/b.png")
@@ -717,6 +717,7 @@ def main():
             else:
                 drawText(screen, 'White wins by checkmate')
                 msg = 'White wins by checkmate'
+            sleep(1)
             end_screen = True
         elif gs.staleMate:
             gs.gameOver = True
