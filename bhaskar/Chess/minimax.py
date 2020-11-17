@@ -23,25 +23,28 @@ def evaluate(board: GameState, for_white: bool) -> int:
     return ret
 
 
-def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int) -> Tuple[float, Move]:
+def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maximizer: bool, curDepth: int, max_depth: int, moves_line: List[Move]) -> Tuple[float, Move, List[Move]]:
     """
         returns an integer score and move which is the best current player can get
     """
     if board.is_game_over():
+        moves_line.append(None)
         if board.staleMate:
-            return 0, None
+            return 0, None, moves_line
         if board.checkMate:
-            return (-inf if maximizer else +inf), None
+            return (-inf if maximizer else +inf), None, moves_line
     if curDepth == max_depth:
-        return evaluate(board, not(board.whiteToMove ^ maximizer)), None
+        return evaluate(board, not(board.whiteToMove ^ maximizer)), None, moves_line
 
     # sending inf so that the branch is ignored by parent
     if final_move is not None and time() - stime > timeout:
-        return +inf if maximizer else -inf, None
+        moves_line.append(None)
+        return +inf if maximizer else -inf, None, moves_line
 
     # moves = list(board.getValidMoves())
     assert moves != []
     best_move = None
+    best_line = []
     if maximizer:
         best_score = -inf
 
@@ -64,25 +67,29 @@ def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maxi
 
     for move in moves:
         board.makeMove(move, by_AI=True)
+        moves_line.append(move)
         global moves_cnt
         moves_cnt += 1
-        curr_score, _ = minimax(
-            board, board.getValidMoves(), alpha, beta, not maximizer, curDepth+1, max_depth)
+        curr_score, _, curr_line = minimax(
+            board, board.getValidMoves(), alpha, beta, not maximizer, curDepth+1, max_depth, moves_line[:])
         board.undoMove()
+        moves_line.pop()
         if is_better_score(curr_score, best_score):
             best_score = curr_score
             best_move = move
+            best_line = curr_line
             update_AB(best_score)
             if alpha >= beta:
                 break
 
-    return best_score, best_move
+    return best_score, best_move, best_line
 
 def minimax_handler(conn:Connection ,board:GameState,moves_set:List[Move], max_depth:int):
-    score, move = minimax(board, moves=moves_set, alpha=-inf, beta=+inf,
-                          maximizer=True, curDepth=0, max_depth=max_depth)
+    score, move, line = minimax(board, moves=moves_set, alpha=-inf, beta=+inf,
+                                maximizer=True, curDepth=0, max_depth=max_depth, moves_line=[])
     conn.send(score)
     conn.send(move)
+    conn.send(line)
 
 def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]:
     """
@@ -113,19 +120,21 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
         procs_list.append(p)
         conn_list.append(par_conn)
     
-    score, move = -inf, None
+    score, move, line = -inf, None, []
     for conn in conn_list:
         curr_score:int = conn.recv()
         curr_move:Move = conn.recv()
+        curr_line: List[Move] = conn.recv()
         if curr_score >= score:
-            score, move = curr_score, curr_move
+            score, move, line = curr_score, curr_move, curr_line
 
     for p in procs_list:
         p.join()
-    
 
+    line_str = [" " if not move else move.getChessNotation() for move in line]
     print(
         f"depth [{max_depth}] done in {time()-depth_stime} score: {score}"
+        f"\ndepth [{max_depth}] {line_str}"
         # f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}"
         )
     if not move:
