@@ -95,7 +95,7 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
     evals_cnt = 0
     moves = board.getValidMoves()
     length = len(moves)
-    step_size = length//6
+    step_size = max(1, length//6)
     moves_sets:List[List[Move]] = []
     procs_list:List[Process] = []
     conn_list:List[Connection] = []
