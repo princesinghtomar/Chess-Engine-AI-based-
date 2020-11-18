@@ -19,6 +19,10 @@ def evaluate(board: GameState, for_white: bool) -> int:
     global eval_time, evals_cnt
     eval_time += duration
     evals_cnt += 1
+    for line in board.board:
+        print(line)
+    print(ret)
+
     # print(f"eval time {duration}")
     return ret
 
@@ -45,25 +49,7 @@ def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maxi
     assert moves != []
     best_move = None
     best_line = []
-    if maximizer:
-        best_score = -inf
-
-        def is_better_score(curr, currbest):
-            return curr >= currbest
-
-        def update_AB(score):
-            nonlocal alpha
-            alpha = max(alpha, score)
-
-    else:
-        best_score = +inf
-
-        def is_better_score(curr, currbest):
-            return curr <= currbest
-
-        def update_AB(score):
-            nonlocal beta
-            beta = min(beta, score)
+    best_score = -inf if maximizer else +inf
 
     for move in moves:
         board.makeMove(move, by_AI=True)
@@ -74,13 +60,17 @@ def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maxi
             board, board.getValidMoves(), alpha, beta, not maximizer, curDepth+1, max_depth, moves_line[:])
         board.undoMove()
         moves_line.pop()
-        if is_better_score(curr_score, best_score):
-            best_score = curr_score
-            best_move = move
-            best_line = curr_line
-            update_AB(best_score)
-            if alpha >= beta:
-                break
+        if maximizer:
+            if curr_score >= best_score: 
+                best_score, best_move, best_line = curr_score, move, curr_line
+            alpha = max(alpha, best_score)
+        else:
+            if curr_score <= best_score:
+                best_score, best_move, best_line = curr_score, move, curr_line
+            beta = min(beta, best_score)
+        
+        if alpha >= beta:
+            break
 
     return best_score, best_move, best_line
 
@@ -149,7 +139,7 @@ def next_move(board: GameState) -> Move:
     global timeout, stime, final_move
     initial_depth = 4
     depth_extension_limit = 10
-    timeout = 20  # in seconds
+    timeout = 5  # in seconds
     final_move = None
     stime = time()
     assert not board.is_game_over()
