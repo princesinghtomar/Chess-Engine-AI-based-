@@ -1,6 +1,5 @@
-from multiprocessing import Process, Pipe, connection
+from multiprocessing import Process, Pipe
 from multiprocessing.connection import Connection
-import random
 from math import inf
 from time import time
 from typing import Tuple, List
@@ -61,25 +60,27 @@ def minimax(board: GameState, moves: List[Move], alpha: float, beta: float, maxi
         board.undoMove()
         moves_line.pop()
         if maximizer:
-            if curr_score >= best_score: 
+            if curr_score >= best_score:
                 best_score, best_move, best_line = curr_score, move, curr_line
             alpha = max(alpha, best_score)
         else:
             if curr_score <= best_score:
                 best_score, best_move, best_line = curr_score, move, curr_line
             beta = min(beta, best_score)
-        
+
         if alpha >= beta:
             break
 
     return best_score, best_move, best_line
 
-def minimax_handler(conn:Connection ,board:GameState,moves_set:List[Move], max_depth:int):
+
+def minimax_handler(conn: Connection, board: GameState, moves_set: List[Move], max_depth: int):
     score, move, line = minimax(board, moves=moves_set, alpha=-inf, beta=+inf,
                                 maximizer=True, curDepth=0, max_depth=max_depth, moves_line=[])
     conn.send(score)
     conn.send(move)
     conn.send(line)
+
 
 def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]:
     """
@@ -93,9 +94,9 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
     moves = board.getValidMoves()
     length = len(moves)
     step_size = max(1, length//6)
-    moves_sets:List[List[Move]] = []
-    procs_list:List[Process] = []
-    conn_list:List[Connection] = []
+    moves_sets: List[List[Move]] = []
+    procs_list: List[Process] = []
+    conn_list: List[Connection] = []
 
     for start in range(0, length, step_size):
         end = start+step_size
@@ -105,15 +106,16 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
 
     for moves_sb_set in moves_sets:
         par_conn, ch_conn = Pipe()
-        p = Process(target=minimax_handler, args=(ch_conn, board,moves_sb_set, max_depth))
+        p = Process(target=minimax_handler, args=(
+            ch_conn, board, moves_sb_set, max_depth))
         p.start()
         procs_list.append(p)
         conn_list.append(par_conn)
-    
+
     score, move, line = -inf, None, []
     for conn in conn_list:
-        curr_score:int = conn.recv()
-        curr_move:Move = conn.recv()
+        curr_score: int = conn.recv()
+        curr_move: Move = conn.recv()
         curr_line: List[Move] = conn.recv()
         if curr_score >= score:
             score, move, line = curr_score, curr_move, curr_line
@@ -126,7 +128,7 @@ def next_move_restricted(board: GameState, max_depth: int) -> Tuple[float, Move]
         f"depth [{max_depth}] done in {time()-depth_stime} score: {score}"
         f"\ndepth [{max_depth}] {line_str}"
         # f"evals_time : {eval_time}, eval_cnt: {evals_cnt}, moves_cnt: {moves_cnt}"
-        )
+    )
     if not move:
         return -inf, None
     return score, move
@@ -148,7 +150,7 @@ def next_move(board: GameState) -> Move:
         board, max_depth=initial_depth)
     print(f"depth ({initial_depth}) chosen")
 
-    for extension in range(2, depth_extension_limit,2):
+    for extension in range(2, depth_extension_limit, 2):
         if time() - stime >= timeout:
             break
         score, move = next_move_restricted(
