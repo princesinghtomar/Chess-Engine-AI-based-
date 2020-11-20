@@ -19,9 +19,9 @@ def evaluate(board: GameState, for_white: bool) -> int:
     global eval_time, evals_cnt
     eval_time += duration
     evals_cnt += 1
-    for line in board.board:
-        print(line)
-    print(ret)
+    # for line in board.board:
+    #     print(line)
+    # print(ret)
 
     # print(f"eval time {duration}")
     return ret
@@ -139,7 +139,7 @@ def next_move(board: GameState) -> Move:
     global timeout, stime, final_move
     initial_depth = 4
     depth_extension_limit = 10
-    timeout = 5  # in seconds
+    timeout = 15  # in seconds
     final_move = None
     stime = time()
     assert not board.is_game_over()

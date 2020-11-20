@@ -182,6 +182,7 @@ class GameState():
         else:
             self.checkMate = False
             self.staleMate = False
+        moves.sort(key=move_score, reverse=True)
         self.cache_present = True
         self.cached_legalMoves = moves[:]
         return moves
@@ -591,3 +592,31 @@ class Move():
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c]+self.rowsToRanks[r]
+
+
+piece_value = {
+    "wp": 100, "bp": 100,
+    "wN": 300, "bN": 300,
+    "wB": 300, "bB": 300,
+    "wR": 500, "bR": 500,
+    "wQ": 900, "bQ": 900,
+    "wK": 200, "bK": 200
+}
+
+
+def move_score(move: Move) -> int:
+    """
+    Returns the score of the move
+    """
+    score = 0
+    if move.pieceCaptured != "--":
+        score = piece_value[move.pieceCaptured]
+        score -= (piece_value[move.pieceMoved])/100
+    else:
+        score = (piece_value[move.pieceMoved])/100
+        if move.isPawnPromotion:
+            score += 1000
+        if move.castle:
+            score += 80
+
+    return score
