@@ -148,7 +148,7 @@ def next_move(board: GameState) -> Move:
         board, max_depth=initial_depth)
     print(f"depth ({initial_depth}) chosen")
 
-    for extension in range(1, depth_extension_limit):
+    for extension in range(2, depth_extension_limit,2):
         if time() - stime >= timeout:
             break
         score, move = next_move_restricted(
