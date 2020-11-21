@@ -2,11 +2,12 @@
 # Global Variables
 
 pawn_value = 100
-knight_value = 300
-bishop_value = 300
-rook_value = 500
-queen_value = 900
+knight_value = 320
+bishop_value = 340
+rook_value = 510
+queen_value = 955
 king_value = 10000
+
 
 W = 0
 B = 1
@@ -78,10 +79,17 @@ def initialize(board):
                 pass
 
 
+# knight is very useful in pawn control thus its value decreases slightly with less pawns
+knight_val_adj = [18, 13, 9, 6, 2,  0,  -3,  -9, -13]
+
+# less number of pawns means open files for rooks and progression towards end game
+# and rrok becomes more useful
+rook_val_adj = [12,  9,   7,  5,  1,  0, -3, -8, -11]
+
 pawn_mg = [
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [-6, -4, 1, 1, 1, 1, -4, -6],
-    [-6, -4, 1, 2, 2, 1, -4, -6],
+    [-6, -4, 2, 3, 3, 2, -4, -6],
+    [-6, -4, 4, 2, 2, 4, -4, -6],
     [-6, -4, 2, 8, 8, 2, -4, -6],
     [-6, -4, 5, 10, 10, 5, -4, -6],
     [-4, -4, 1, 5, 5, 1, -4, -4],
@@ -91,7 +99,7 @@ pawn_mg = [
 
 pawn_eg = [
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [-6, -4, 1, 1, 1, 1, -4, -6],
+    [-6, 4, 3, 3, 3, 3, 4, -6],
     [-6, -4, 1, 2, 2, 1, -4, -6],
     [-6, -4, 2, 8, 8, 2, -4, -6],
     [-6, -4, 5, 10, 10, 5, -4, -6],
@@ -103,10 +111,10 @@ pawn_eg = [
 knight_mg = [
     [-8, -8, -8, -8, -8, -8, -8, -8],
     [-8, 0, 0, 0, 0, 0, 0, -8],
-    [-8, 0, 4, 4, 4, 4, 0, -8],
-    [-8, 0, 4, 8, 8, 4, 0, -8],
-    [-8, 0, 4, 8, 8, 4, 0, -8],
-    [-8, 0, 4, 4, 4, 4, 0, -8],
+    [-8, 0, 5, 5, 5, 5, 0, -8],
+    [-8, 0, 5, 10, 10, 5, 0, -8],
+    [-8, 0, 5, 10, 10, 5, 0, -8],
+    [-8, 0, 5, 5, 5, 5, 0, -8],
     [-8, 0, 1, 2, 2, 1, 0, -8],
     [-8, -12, -8, -8, -8, -8, -12, -8]
 ]
@@ -136,11 +144,11 @@ bishop_mg = [
 bishop_eg = [
     [-4, -4, -4, -4, -4, -4, -4, -4],
     [-4, 0, 0, 0, 0, 0, 0, -4],
-    [-4, 0, 2, 4, 4, 2, 0, -4],
+    [-4, 0, 3, 4, 4, 3, 0, -4],
     [-4, 0, 4, 6, 6, 4, 0, -4],
     [-4, 0, 4, 6, 6, 4, 0, -4],
-    [-4, 1, 2, 4, 4, 2, 1, -4],
-    [-4, 2, 1, 1, 1, 1, 2, -4],
+    [-4, 1, 3, 4, 4, 3, 1, -4],
+    [-4, 3, 1, 1, 1, 1, 3, -4],
     [-4, -4, -12, -4, -4, -12, -4, -4]
 ]
 
@@ -162,18 +170,18 @@ rook_eg = [
     [-5, 0, 0, 0, 0, 0, 0, -5],
     [-5, 0, 0, 0, 0, 0, 0, -5],
     [-5, 0, 0, 0, 0, 0, 0, -5],
-    [-5, 0, 0, 0, 0, 0, 0, -5],
-    [0, 0, 0, 2, 2, 0, 0, 0]
+    [-5, 0, 3, 3, 3, 3, 0, -5],
+    [0, 5, 5, 2, 2, 5, 5, 0]
 ]
 
 queen_mg = [
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0],
-    [0, 0, 1, 2, 2, 1, 0, 0],
+    [0, 0, 2, 2, 2, 2, 0, 0],
     [0, 0, 2, 3, 3, 2, 0, 0],
+    [0, 0, 3, 4, 4, 3, 0, 0],
+    [0, 0, 3, 4, 4, 3, 0, 0],
     [0, 0, 2, 3, 3, 2, 0, 0],
-    [0, 0, 1, 2, 2, 1, 0, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0],
+    [0, 0, 2, 2, 2, 2, 0, 0],
     [-5, -5, -5, -5, -5, -5, -5, -5]
 ]
 
@@ -196,7 +204,7 @@ king_mg = [
     [0, 10, -10, -30, -30, -10, 10, 0],
     [10, 20, 0, -20, -20, 0, 20, 10],
     [30, 40, 20, 0, 0, 20, 40, 30],
-    [40, 50, 30, 10, 10, 30, 50, 40]
+    [40, 60, 30, 10, 10, 30, 60, 40]
 ]
 
 king_eg = [
@@ -256,7 +264,7 @@ def eval_knight_mg(c):
     """
     Calculate midgame knight evaluation for color c
     """
-    eval = n[c] * knight_value
+    eval = n[c] * (knight_value - knight_val_adj[p[c]])
     for pos in pos_n[c]:
         eval += knight_mg[pos[0]][pos[1]]
     return eval
@@ -276,7 +284,7 @@ def eval_rook_mg(c):
     """
     Calculate midgame rook evaluation for color c
     """
-    eval = r[c] * rook_value
+    eval = r[c] * (rook_value + rook_val_adj[p[c]])
     for pos in pos_r[c]:
         eval += rook_mg[pos[0]][pos[1]]
     return eval
@@ -414,7 +422,6 @@ def evaluate_board(board):
     mid_val = mid_game()
     end_val = end_game()
     # print(phase, mid_val, end_val)
-    # ks = king_safety()
     ret = (mid_val * phase + (128 - phase) * end_val) / 128
     return ret
 
