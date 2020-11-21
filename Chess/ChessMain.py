@@ -496,7 +496,7 @@ def main():
     while running:
         print_board = board_to_fen(
             gs.board, gs.whiteToMove, gs.enpassantPossible, half_move, full_move)
-        print(print_board)
+        # print(print_board)
         # print(gs.enpassantPossible)
         # print(convert_c2p(gs.enpassantPossible))
 
@@ -550,10 +550,10 @@ def main():
                     elif flag_temp:
                         gs.whiteright = k1
 
-                print(gs.blackright)
-                print(gs.blackleft)
-                print(gs.whiteright)
-                print(gs.whiteleft)
+                # print(gs.blackright)
+                # print(gs.blackleft)
+                # print(gs.whiteright)
+                # print(gs.whiteleft)
 
             elif not is_fischer or not is_random or not pvcf:
                 gs.board = [
@@ -585,7 +585,7 @@ def main():
                     if ((preference == 0) or (preference == 1 and gs.whiteToMove) or (preference == 2 and gs.whiteToMove == 0)):
                         # inside_c=False
                         location = p.mouse.get_pos()  # get mouse coordinates
-                        print(location)
+                        # print(location)
                         if location[0] >= 800:
                             location = (799, location[1])
                         if location[1] >= 800:
@@ -602,7 +602,7 @@ def main():
                         if len(playerClicks) == 2:  # after 2nd click
                             move = ChessEngine.Move(
                                 playerClicks[0], playerClicks[1], gs.board)
-                            print(move.getChessNotation())
+                            # print(move.getChessNotation())
                             for i in range(len(validMoves)):
                                 if move == validMoves[i]:
 
@@ -772,8 +772,8 @@ def lastMove(screen, gs, initial, final):
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
-        print("here is selelected square")
-        print(sqSelected)
+        # print("here is selelected square")
+        # print(sqSelected)
         assert(r < 8)
         assert(c < 8)
         # square selected is a piece that can be moved

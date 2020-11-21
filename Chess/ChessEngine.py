@@ -420,7 +420,7 @@ class GameState():
     def getCastleMoves(self, r, c, moves, allyColor):
         inCheck = self.squareUnderAttack(r, c, allyColor)
         if inCheck:
-            print("oof")
+            # print("oof")
             return  # castle in check
         # cant castle if given uprights
         if (self.whiteToMove and self.whiteCastleKingSide) or (not self.whiteToMove and self.blackCastleKingSide):
