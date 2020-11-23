@@ -39,9 +39,11 @@ for wname, wway in strategies_list.items():
 
 
 print()
+print("Win scores")
 for name, score in sorted(scores.items(), key=lambda tup: tup[1]):
     print(name, score)
 
 print()
+print("Elo ratings")
 for name, elo in sorted(elo_ratings.items(), key=lambda tup: tup[1]):
     print(name, elo)

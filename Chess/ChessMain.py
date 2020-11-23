@@ -5,7 +5,7 @@ import pygame as p
 import ChessEngine
 import random
 import io
-from time import time,sleep
+from time import time, sleep
 from minimax import next_move
 
 
@@ -58,7 +58,7 @@ def acknowledge_screen(clock):
 
     while flag_start:
         screen = p.display.set_mode((WIDTH+50, HEIGHT+50))
-        
+
         screen.fill(p.Color(0x000F0F))
         screen.blit(background2, (0, -16))
 
@@ -496,7 +496,7 @@ def main():
     while running:
         print_board = board_to_fen(
             gs.board, gs.whiteToMove, gs.enpassantPossible, half_move, full_move)
-        print(print_board)
+        # print(print_board)
         # print(gs.enpassantPossible)
         # print(convert_c2p(gs.enpassantPossible))
 
@@ -535,26 +535,26 @@ def main():
                 if is_fischer:
                     is_fischer = False
                 flag_temp = 0
-                for k1 in range(0,8):
-                    if gs.board[0][k1][1]=='R' and not flag_temp:
-                        flag_temp+=1
+                for k1 in range(0, 8):
+                    if gs.board[0][k1][1] == 'R' and not flag_temp:
+                        flag_temp += 1
                         gs.blackleft = k1
                     elif flag_temp:
                         gs.blackright = k1
 
                 flag_temp = 0
-                for k1 in range(0,8):
-                    if gs.board[7][k1][1]=='R' and not flag_temp:
-                        flag_temp+=1
+                for k1 in range(0, 8):
+                    if gs.board[7][k1][1] == 'R' and not flag_temp:
+                        flag_temp += 1
                         gs.whiteleft = k1
                     elif flag_temp:
                         gs.whiteright = k1
-                
-                print(gs.blackright)
-                print(gs.blackleft)
-                print(gs.whiteright)
-                print(gs.whiteleft)
-                
+
+                # print(gs.blackright)
+                # print(gs.blackleft)
+                # print(gs.whiteright)
+                # print(gs.whiteleft)
+
             elif not is_fischer or not is_random or not pvcf:
                 gs.board = [
                     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -579,17 +579,17 @@ def main():
 
             # mouse handler
 
-            elif e.type == p.MOUSEBUTTONDOWN   :
+            elif e.type == p.MOUSEBUTTONDOWN:
                 # print("Inside 2nd")
                 if not gs.gameOver:  # check here for bug
                     if ((preference == 0) or (preference == 1 and gs.whiteToMove) or (preference == 2 and gs.whiteToMove == 0)):
                         # inside_c=False
                         location = p.mouse.get_pos()  # get mouse coordinates
-                        print(location)
-                        if location[0]>=800:
-                            location=(799,location[1])
-                        if location[1]>=800:
-                            location=(location[0],799)
+                        # print(location)
+                        if location[0] >= 800:
+                            location = (799, location[1])
+                        if location[1] >= 800:
+                            location = (location[0], 799)
                         col = location[0]//SQ_SIZE
                         row = location[1]//SQ_SIZE
                         if sqSelected == (row, col):  # reset if clicked on same block
@@ -602,7 +602,7 @@ def main():
                         if len(playerClicks) == 2:  # after 2nd click
                             move = ChessEngine.Move(
                                 playerClicks[0], playerClicks[1], gs.board)
-                            print(move.getChessNotation())
+                            # print(move.getChessNotation())
                             for i in range(len(validMoves)):
                                 if move == validMoves[i]:
 
@@ -772,10 +772,10 @@ def lastMove(screen, gs, initial, final):
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if sqSelected != ():
         r, c = sqSelected
-        print("here is selelected square")
-        print(sqSelected)
-        assert(r<8)
-        assert(c<8)
+        # print("here is selelected square")
+        # print(sqSelected)
+        assert(r < 8)
+        assert(c < 8)
         # square selected is a piece that can be moved
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'):
             # highlight selected square
