@@ -422,7 +422,7 @@ def evaluate_board(board):
     mid_val = mid_game()
     end_val = end_game()
     # print(phase, mid_val, end_val)
-    ret = (mid_val * phase + (128 - phase) * end_val) / 128
+    ret = (mid_val * phase + (128 - phase) * end_val) // 128
     return ret
 
 

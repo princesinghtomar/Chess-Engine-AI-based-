@@ -6,6 +6,10 @@ from typing import Tuple, List
 from ChessEngine import GameState, Move
 from Evaluation import evaluate_board
 
+initial_depth = 4
+depth_extension_limit = 10
+timeout = 15  # in seconds
+
 
 def evaluate(board: GameState, for_white: bool) -> int:
     """
@@ -138,10 +142,7 @@ def next_move(board: GameState) -> Move:
     """
         returns best move calculated till timeout
     """
-    global timeout, stime, final_move
-    initial_depth = 4
-    depth_extension_limit = 10
-    timeout = 15  # in seconds
+    global stime, final_move
     final_move = None
     stime = time()
     assert not board.is_game_over()
@@ -155,7 +156,8 @@ def next_move(board: GameState) -> Move:
             break
         score, move = next_move_restricted(
             board, max_depth=initial_depth+extension)
-        if move is not None and score >= final_score:
+
+        if move is not None and score > final_score:
             final_score, final_move = score, move
             print(f"depth ({initial_depth+extension}) chosen")
 
