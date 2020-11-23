@@ -26,6 +26,7 @@ There are 5 options:
 
 > Note: The Custom Board option is for debugging and not for playing. Don't select that.
 
++ In normal chess, user can undo the moves by pressing `z` key.
 + You will be prompted to enter inputs in the command line in two scenarios:  
   + If a player has to promote it's pawn then the promoting piece type would be required to enter though terminal (Q/N/R/B).
 
